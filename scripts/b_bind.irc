@@ -1,0 +1,75 @@
+
+/*
+ * ----------------
+ * -=> Key Bindings
+ * ----------------
+ */
+
+/* the meta characters */
+> Bind ^[ meta1_character;
+> Bind meta1-[ meta2_character;
+> Bind meta1-O meta2_character;
+> Bind meta2-1 meta3_character;
+> Bind meta2-2 meta5_character;
+> Bind meta2-3 meta6_character;
+> Bind meta2-4 meta7_character;
+> Bind meta2-5 meta8_character;
+> Bind meta2-6 meta9_character;
+#, Bind meta2-[ meta10_character;
+
+/* void bf.SetupKeyBindings(void) */
+> Alias bf.SetupKeyBindings
+{
+   > ForEach bv.k.Ctrl atmp.kfe
+      {
+      > ^Bind ^$atmp.kfe $(bv.k.Ctrl.$atmp.kfe);
+      }
+   > ^Bind ^\] $bv.k.Ctrl.Right.Bracket;
+   > ^Bind ^? $bv.k.Nor.Backspace;
+
+   > ^Bind meta1-^\[ $bv.k.Meta1.Escape;
+   > ^Bind meta1-< $bv.k.Meta1.LessThan;
+   > ^Bind meta1-> $bv.k.Meta1.GreaterThan;
+
+/* Alt-* */
+   > ForEach bv.k.Meta1 atmp.kfe
+      {
+      > ^Bind meta1-$tolower($atmp.kfe) $(bv.k.Meta1.$atmp.kfe);
+      }
+   > ^Bind meta1-^H $bv.k.Meta1.Backspace;
+   > ^Bind meta1-^? $bv.k.Meta1.Backspace;
+   > ^Bind meta1-^I $bv.k.Meta1.Tab;
+   > ^Bind meta1-- $bv.k.Meta1.Minus;
+
+/* other meta chars */
+/* . Foreach bv.k.Meta11 tmp.kfe
+ *     {
+ *     > ^Bind meta11-$tolower($tmp.kfe) $(bv.k.Meta11.$tmp.kfe);
+ *     }
+ */
+
+/* Arrow keys */
+   > ^Bind meta2-D $bv.k.Nor.Left;
+   > ^Bind meta2-C $bv.k.Nor.Right;
+   > ^Bind meta2-A $bv.k.Nor.Up;
+   > ^Bind meta2-B $bv.k.Nor.Down;
+
+/* Function keys 1-5 */
+/* > ^Bind meta10-\[A $bv.k.Nor.F1;
+ * > ^Bind meta10-\[B $bv.k.Nor.F2;
+ * > ^Bind meta10-\[C $bv.k.Nor.F3;
+ * > ^Bind meta10-\[D $bv.k.Nor.F4;
+ * > ^Bind meta10-\[E $bv.k.Nor.F5;
+ */
+
+   > ^Bind meta3-~ $bv.k.Nor.Home;
+   > ^Bind meta5-~ $bv.k.Nor.Insert;
+   > ^Bind meta6-~ $bv.k.Nor.Delete;
+   > ^Bind meta7-~ $bv.k.Nor.End;
+   > ^Bind meta8-~ $bv.k.Nor.Pageup;
+   > ^Bind meta9-~ $bv.k.Nor.Pagedown;
+
+   @ atmp.kfe = [];
+}
+bf.SetupKeyBindings
+

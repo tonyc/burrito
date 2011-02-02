@@ -1,0 +1,789 @@
+/*
+ *  _______         ______ _______ __ _____          _____
+ * |    ___|.-----.|      |   |   |__|     |_.---.-.|     \.---.-.
+ * |    ___||     ||   ---|       |  |       |  _  ||  --  |  _  |
+ * |_______||__|__||______|___|___|__|_______|___._||_____/|___._|
+ *
+ * Extra2's script by TaCo for BuRRiTo
+ * This is EnCHiLaDa v0.1
+ */
+
+@ bx.Xtra2Version = [EnCHiLaDa v0.1];
+@ bg.VersionReply = [$bg.VersionReply + $bx.Xtra2Version];
+> Eval > ^Set Client_Information [running: $bg.VersionReply];
+@ bx.start.load = time();
+> Eval bf.Echo.b Loading the Xtra2 script $bx.Xtra2Version\...;
+
+/* Confuse Kick orig by biggles */
+> Alias bxc.ConfuseKick
+{
+   @ atmp.ck.chan = ischannel($0) ? [$0] : C;
+   @ atmp.ck.nick = ischannel($0) ? [$1] : [$0];
+   if ([$atmp.ck.nick]!=[])
+      {
+      bf.Mode $atmp.ck.chan +o $atmp.ck.nick;
+      bf.Mode $atmp.ck.chan -o $atmp.ck.nick;
+      bf.Mode $atmp.ck.chan +o $atmp.ck.nick;
+      bc.Kick $atmp.ck.chan $atmp.ck.nick CoNFuSe - A KiCk;
+      }
+   #else
+      {
+      bf.Echo.h Usage: /Ck [#chan] <nick>
+      }
+}
+
+
+/* Zippy Quotes orig put together by Xach (quotes from /usr/games/fortunes)
+   ------------------------------------------------------------------------ */
+> Alias bxc.ZippyTopic
+{
+   > Topic ${ischannel($0)?[$0]:C} $bx.Zippy[$rand($bx.ZippyNum)];
+}
+
+> Alias bxc.ZippyKick
+{
+   @ atmp.zk.chan = [${ischannel($0)?[$0]:C}];
+   @ atmp.zk.nick = [${ischannel($0)?[$1]:[$0]}];
+   if ([$atmp.zk.nick])
+      {
+      bc.Kick $atmp.zk.chan $atmp.zk.Nick $bx.Zippy[$rand($bx.ZippyNum)];
+      }
+   #else
+      {
+      bf.Echo.h Usage: /Zk [#chan] <nick>
+      }
+}
+
+> Alias bxc.Zippy
+{
+   @ atmp.zip.chan = [${ischannel($0)?[$0]:C}];
+   @ atmp.zip.nick = [${ischannel($0)?[$1]:[$0]}];
+   if ([$atmp.zip.chan]!=[0])
+      {
+      > Msg $atmp.zip.chan ${[$atmp.zip.nick]?[$atmp.zip.nick$bg.Colon ]:[]}$bx.Zippy[$rand($bx.ZippyNum)];
+      }
+}
+
+> Alias bxc.ZippyMsg
+{
+   ${[$0]==[-Mass]?[bxc.MassMsg]:[> Msg]} ${[$0]!=[-Mass]&&[$0]!=[]?[$0]:C} $bx.Zippy[$rand($bx.ZippyNum)];
+}
+
+> Alias bxc.ZippyCmd
+{
+   if ([$0])
+      {
+      $* $bx.Zippy[$rand($bx.ZippyNum)];
+      }
+   #else
+      {
+      bf.Echo.h Usage: /ZippyCmd <command>;
+      bf.Echo.h ex: /ZippyCmd say, /ZippyCmd msg $N;
+      }
+}
+
+> Alias bc.Bye
+{
+   bc.Quit $bx.Zippy[$rand($bx.ZippyNum)];
+}
+
+@ bx.Zippy[0] = [A dwarf is passing out somewhere in Detroit!];
+@ bx.Zippy[1] = [A shapely CATHOLIC SCHOOLGIRL is FIDGETING inside my costume..];
+@ bx.Zippy[2] = [A wide-eyed, innocent UNICORN, poised delicately in a MEADOW filled with LILACS, LOLLIPOPS & small CHILDREN at the HUSH of twilight??];
+@ bx.Zippy[3] = [Actually, what I\'d like is a little toy spaceship!!];
+@ bx.Zippy[4] = [All I can think of is a platter of organic PRUNE CRISPS being trampled by an army of swarthy, Italian LOUNGE SINGERS ...];
+@ bx.Zippy[5] = [All of a sudden, I want to THROW OVER my promising ACTING CAREER, grow a LONG BLACK BEARD and wear a BASEBALL HAT!! ...  Although I don\'t know WHY!!];
+@ bx.Zippy[6] = [All of life is a blur of Republicans and meat!];
+@ bx.Zippy[7] = [All right, you degenerates!  I want this place evacuated in 20 seconds!];
+@ bx.Zippy[8] = [All this time I\'ve been VIEWING a RUSSIAN MIDGET SODOMIZE a HOUSECAT!];
+@ bx.Zippy[9] = [Alright, you!!  Imitate a WOUNDED SEAL pleading for a PARKING SPACE!!];
+@ bx.Zippy[10] = [Am I accompanied by a PARENT or GUARDIAN?];
+@ bx.Zippy[11] = [Am I elected yet?];
+@ bx.Zippy[12] = [Am I in GRADUATE SCHOOL yet?];
+@ bx.Zippy[13] = [Am I SHOPLIFTING?];
+@ bx.Zippy[14] = [America!!  I saw it all!!  Vomiting!  Waving!  JERRY FALWELLING into your void tube of UHF oblivion!!  SAFEWAY of the mind ...];
+@ bx.Zippy[15] = [An air of FRENCH FRIES permeates my nostrils!!];
+@ bx.Zippy[16] = [An INK-LING?  Sure -- TAKE one!!  Did you BUY any COMMUNIST UNIFORMS??];
+@ bx.Zippy[17] = [An Italian is COMBING his hair in suburban DES MOINES!];
+@ bx.Zippy[18] = [And furthermore, my bowling average is unimpeachable!!!];
+@ bx.Zippy[19] = [ANN JILLIAN\'S HAIR makes LONI ANDERSON\'S HAIR look like RICARDO MONTALBAN\'S HAIR!];
+@ bx.Zippy[20] = [Are the STEWED PRUNES still in the HAIR DRYER?];
+@ bx.Zippy[21] = [Are we live or on tape?];
+@ bx.Zippy[22] = [Are we on STRIKE yet?];
+@ bx.Zippy[23] = [Are we THERE yet?];
+@ bx.Zippy[24] = [Are we THERE yet?  My MIND is a SUBMARINE!!];
+@ bx.Zippy[25] = [Are you mentally here at Pizza Hut??];
+@ bx.Zippy[26] = [Are you selling NYLON OIL WELLS??  If so, we can use TWO DOZEN!!];
+@ bx.Zippy[27] = [Are you still an ALCOHOLIC?];
+@ bx.Zippy[28] = [As President I have to go vacuum my coin collection!];
+@ bx.Zippy[29] = [Awright, which one of you hid my PENIS ENVY?];
+@ bx.Zippy[30] = [BARBARA STANWYCK makes me nervous!!];
+@ bx.Zippy[31] = [Barbie says, Take quaaludes in gin and go to a disco right away! But Ken says, WOO-WOO!!  No credit at "Mr. Liquor"!!];
+@ bx.Zippy[32] = [BARRY ... That was the most HEART-WARMING rendition of "I DID IT MY WAY" I\'ve ever heard!!];
+@ bx.Zippy[33] = [Being a BALD HERO is almost as FESTIVE as a TATTOOED KNOCKWURST.];
+@ bx.Zippy[34] = [BELA LUGOSI is my co-pilot ...];
+@ bx.Zippy[35] = [BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-BI-];
+@ bx.Zippy[36] = [... bleakness ... desolation ... plastic forks ...];
+@ bx.Zippy[37] = [Bo Derek ruined my life!];
+@ bx.Zippy[38] = [Boy, am I glad it\'s only 1971...];
+@ bx.Zippy[39] = [Boys, you have ALL been selected to LEAVE th\' PLANET in 15 minutes!!];
+@ bx.Zippy[40] = [But they went to MARS around 1953!!];
+@ bx.Zippy[41] = [But was he mature enough last night at the lesbian masquerade?];
+@ bx.Zippy[42] = [Can I have an IMPULSE ITEM instead?];
+@ bx.Zippy[43] = [Can you MAIL a BEAN CAKE?];
+@ bx.Zippy[44] = [Catsup and Mustard all over the place!  It\'s the Human Hamburger!];
+@ bx.Zippy[45] = [CHUBBY CHECKER just had a CHICKEN SANDWICH in downtown DULUTH!];
+@ bx.Zippy[46] = [Civilization is fun!  Anyway, it keeps me busy!!];
+@ bx.Zippy[47] = [Clear the laundromat!!  This whirl-o-matic just had a nuclear meltdown!!];
+@ bx.Zippy[48] = [Concentrate on th\'cute, li\'l CARTOON GUYS!  Remember the SERIAL NUMBERS!!  Follow the WHIPPLE AVE. EXIT!!  Have a FREE PEPSI!!  Turn LEFT at th\'HOLIDAY INN!!  JOIN the CREDIT WORLD!!  MAKE me an OFFER!!!];
+@ bx.Zippy[49] = [CONGRATULATIONS!  Now should I make thinly veiled comments about DIGNITY, self-esteem and finding TRUE FUN in your RIGHT VENTRICLE??];
+@ bx.Zippy[50] = [Content:  80% POLYESTER, 20% DACRONi ... The waitress\'s UNIFORM sheds TARTAR SAUCE like an 8" by 10" GLOSSY ...];
+@ bx.Zippy[51] = [Could I have a drug overdose?];
+@ bx.Zippy[52] = [Did an Italian CRANE OPERATOR just experience uninhibited sensations in a MALIBU HOT TUB?];
+@ bx.Zippy[53] = [Did I do an INCORRECT THING??];
+@ bx.Zippy[54] = [Did I say I was a sardine?  Or a bus???];
+@ bx.Zippy[55] = [Did I SELL OUT yet??];
+@ bx.Zippy[56] = [Did YOU find a DIGITAL WATCH in YOUR box of VELVEETA?];
+@ bx.Zippy[57] = [Did you move a lot of KOREAN STEAK KNIVES this trip, Dingy?];
+@ bx.Zippy[58] = [DIDI ... is that a MARTIAN name, or, are we in ISRAEL?];
+@ bx.Zippy[59] = [Didn\'t I buy a 1951 Packard from you last March in Cairo?];
+@ bx.Zippy[60] = [Disco oil bussing will create a throbbing naugahide pipeline running straight to the tropics from the rug producing regions and devalue the dollar!];
+@ bx.Zippy[61] = [Do I have a lifestyle yet?];
+@ bx.Zippy[62] = [Do you guys know we just passed thru a BLACK HOLE in space?];
+@ bx.Zippy[63] = [Do you have exactly what I want in a plaid poindexter bar bat??];
+@ bx.Zippy[64] = [Do you like "TENDER VITTLES"?];
+@ bx.Zippy[65] = [Do you think the "Monkees" should get gas on odd or even days?];
+@ bx.Zippy[66] = [Does someone from PEORIA have a SHORTER ATTENTION span than me?];
+@ bx.Zippy[67] = [does your DRESSING ROOM have enough ASPARAGUS?];
+@ bx.Zippy[68] = [DON\'T go!!  I\'m not HOWARD COSELL!!  I know POLISH JOKES ... WAIT!! Don\'t go!!  I AM Howard Cosell! ... And I DON\'T know Polish jokes!!];
+@ bx.Zippy[69] = [Don\'t hit me!!  I\'m in the Twilight Zone!!!];
+@ bx.Zippy[70] = [Don\'t SANFORIZE me!!];
+@ bx.Zippy[71] = [Don\'t worry, nobody really LISTENS to lectures in MOSCOW, either! ... FRENCH, HISTORY, ADVANCED CALCULUS, COMPUTER PROGRAMMING, BLACK STUDIES, SOCIOBIOLOGY! ...  Are there any QUESTIONS??];
+@ bx.Zippy[72] = [Edwin Meese made me wear CORDOVANS!!];
+@ bx.Zippy[73] = [Eisenhower!!  Your mimeograph machine upsets my stomach!!];
+@ bx.Zippy[74] = [Either CONFESS now or we go to "PEOPLE\'S COURT"!!];
+@ bx.Zippy[75] = [Everybody gets free BORSCHT!];
+@ bx.Zippy[76] = [Everybody is going somewhere!!  It\'s probably a garage sale or a disaster Movie!!];
+@ bx.Zippy[77] = [Everywhere I look I see NEGATIVITY and ASPHALT ...];
+@ bx.Zippy[78] = [Excuse me, but didn\'t I tell you there\'s NO HOPE for the survival of OFFSET PRINTING?];
+@ bx.Zippy[79] = [FEELINGS are cascading over me!!!];
+@ bx.Zippy[80] = [Finally, Zippy drives his 1958 RAMBLER METROPOLITAN into the faculty dining room.];
+@ bx.Zippy[81] = [First, I\'m going to give you all the ANSWERS to today\'s test ...  So just plug in your SONY WALKMANS and relax!!];
+@ bx.Zippy[82] = [FOOLED you!  Absorb EGO SHATTERING impulse rays, polyester poltroon!!];
+@ bx.Zippy[83] = [for ARTIFICIAL FLAVORING!!];
+@ bx.Zippy[84] = [Four thousand different MAGNATES, MOGULS & NABOBS are romping in my gothic solarium!!];
+@ bx.Zippy[85] = [FROZEN ENTREES may be flung by members of opposing SWANSON SECTS ...];
+@ bx.Zippy[86] = [FUN is never having to say you\'re SUSHI!!];
+@ bx.Zippy[87] = [Gee, I feel kind of LIGHT in the head now, knowing I can\'t make my satellite dish PAYMENTS!];
+@ bx.Zippy[88] = [Gibble, Gobble, we ACCEPT YOU ...];
+@ bx.Zippy[89] = [Give them RADAR-GUIDED SKEE-BALL LANES and VELVEETA BURRITOS!!];
+@ bx.Zippy[90] = [Go on, EMOTE!  I was RAISED on thought balloons!!];
+@ bx.Zippy[91] = [GOOD-NIGHT, everybody ... Now I have to go administer FIRST-AID to my pet LEISURE SUIT!!];
+@ bx.Zippy[92] = [HAIR TONICS, please!!];
+@ bx.Zippy[93] = [Half a mind is a terrible thing to waste!];
+@ bx.Zippy[94] = [Hand me a pair of leather pants and a CASIO keyboard -- I\'m living for today!];
+@ bx.Zippy[95] = [Has everybody got HALVAH spread all over their ANKLES??];
+@ bx.Zippy[96] = [Has everybody got HALVAH spread all over their ANKLES?? ...  Now, it\'s time to "HAVE A NAGEELA"!!];
+@ bx.Zippy[97] = [... he dominates the DECADENT SUBWAY SCENE.];
+@ bx.Zippy[98] = [He is the MELBA-BEING ... the ANGEL CAKE ... XEROX him ... XEROX him --];
+@ bx.Zippy[99] = [He probably just wants to take over my CELLS and then EXPLODE inside me like a BARREL of runny CHOPPED LIVER!  Or maybe he\'d like to PSYCHOLIGICALLY TERRORISE ME until I have no objection to a RIGHT-WING MILITARY TAKEOVER of my apartment!!  I guess I should call AL PACINO!];
+@ bx.Zippy[100] = [HELLO KITTY gang terrorizes town, family STICKERED to death!];
+@ bx.Zippy[101] = [HELLO, everybody, I\'m a HUMAN!!];
+@ bx.Zippy[102] = [Hello, GORRY-O!!  I\'m a GENIUS from HARVARD!!];
+@ bx.Zippy[103] = [Hello.  I know the divorce rate among unmarried Catholic Alaskan females!!];
+@ bx.Zippy[104] = [Hello.  Just walk along and try NOT to think about your INTESTINES being almost FORTY YARDS LONG!!];
+@ bx.Zippy[105] = [Hello...  IRON CURTAIN?  Send over a SAUSAGE PIZZA!  World War III?  No thanks!];
+@ bx.Zippy[106] = [Hello?  Enema Bondage?  I\'m calling because I want to be happy, I guess ...];
+@ bx.Zippy[107] = [Here I am at the flea market but nobody is buying my urine sample bottles ...];
+@ bx.Zippy[108] = [Here I am in 53 B.C. and all I want is a dill pickle!!];
+@ bx.Zippy[109] = [Here I am in the POSTERIOR OLFACTORY LOBULE but I don\'t see CARL SAGAN anywhere!!];
+@ bx.Zippy[110] = [Here we are in America ... when do we collect unemployment?];
+@ bx.Zippy[111] = [Hey, wait a minute!!  I want a divorce!! ... you\'re not Clint Eastwood!!];
+@ bx.Zippy[112] = [Hey, waiter!  I want a NEW SHIRT and a PONY TAIL with lemon sauce!];
+@ bx.Zippy[113] = [Hiccuping & trembling into the WASTE DUMPS of New Jersey like some drunken CABBAGE PATCH DOLL, coughing in line at FIORUCCI\'S!!];
+@ bx.Zippy[114] = [Hmmm ... a CRIPPLED ACCOUNTANT with a FALAFEL sandwich is HIT by a TROLLEY-CAR ...];
+@ bx.Zippy[115] = [Hmmm ... A hash-singer and a cross-eyed guy were SLEEPING on a deserted island, when ...];
+@ bx.Zippy[116] = [Hmmm ... a PINHEAD, during an EARTHQUAKE, encounters an ALL-MIDGET FIDDLE ORCHESTRA ... ha ... ha ...];
+@ bx.Zippy[117] = [Hmmm ... an arrogant bouquet with a subtle suggestion of POLYVINYL CHLORIDE ...];
+@ bx.Zippy[118] = [Hold the MAYO & pass the COSMIC AWARENESS ...];
+@ bx.Zippy[119] = [HOORAY, Ronald!!  Now YOU can marry LINDA RONSTADT too!!];
+@ bx.Zippy[120] = [How do I get HOME?];
+@ bx.Zippy[121] = [How do you explain Wayne Newton\'s POWER over millions?  It\'s th\' MOUSTACHE ...  Have you ever noticed th\' way it radiates SINCERITY, HONESTY & WARMTH?  It\'s a MOUSTACHE you want to take HOME and introduce to NANCY SINATRA!];
+@ bx.Zippy[122] = [How many retured bricklayers from FLORIDA are out purchasing PENCIL SHARPENERS right NOW??];
+@ bx.Zippy[123] = [How\'s it going in those MODULAR LOVE UNITS??];
+@ bx.Zippy[124] = [How\'s the wife?  Is she at home enjoying capitalism?];
+@ bx.Zippy[125] = [hubub, hubub, HUBUB, hubub, hubub, hubub, HUBUB, hubub, hubub, hubub.];
+@ bx.Zippy[126] = [HUGH BEAUMONT died in 1982!!];
+@ bx.Zippy[127] = [HUMAN REPLICAS are inserted into VATS of NUTRITIONAL YEAST ...];
+@ bx.Zippy[128] = [I always have fun because I\'m out of my mind!!!];
+@ bx.Zippy[129] = [I am a jelly donut.  I am a jelly donut.];
+@ bx.Zippy[130] = [I am a traffic light, and Alan Ginzberg kidnapped my laundry in 1927!];
+@ bx.Zippy[131] = [I am covered with pure vegetable oil and I am writing a best seller!];
+@ bx.Zippy[132] = [I am deeply CONCERNED and I want something GOOD for BREAKFAST!];
+@ bx.Zippy[133] = [I am having FUN...  I wonder if it\'s NET FUN or GROSS FUN?];
+@ bx.Zippy[134] = [I am NOT a nut....];
+@ bx.Zippy[135] = [I appoint you ambassador to Fantasy Island!!!];
+@ bx.Zippy[136] = [I brought my BOWLING BALL -- and some DRUGS!!];
+@ bx.Zippy[137] = [I can\'t decide which WRONG TURN to make first!!];
+@ bx.Zippy[138] = [I can\'t decide which WRONG TURN to make first!!  I wonder if BOB GUCCIONE has these problems!];
+@ bx.Zippy[139] = [I can\'t think about that.  It doesn\'t go with HEDGES in the shape of LITTLE LULU -- or ROBOTS making BRICKS ...];
+@ bx.Zippy[140] = [I demand IMPUNITY!];
+@ bx.Zippy[141] = [I didn\'t order any WOO-WOO ... Maybe a YUBBA ... But no WOO-WOO!];
+@ bx.Zippy[142] = [I don\'t believe there really IS a GAS SHORTAGE ... I think it\'s all just a BIG HOAX on the part of the plastic sign salesmen -- to sell more numbers!!];
+@ bx.Zippy[143] = [... I don\'t know why but, suddenly, I want to discuss declining I.Q. LEVELS with a blue ribbon SENATE SUB-COMMITTEE!];
+@ bx.Zippy[144] = [I don\'t know WHY I said that ... I think it came from the FILLINGS in my read molars ...];
+@ bx.Zippy[145] = [... I don\'t like FRANK SINATRA or his CHILDREN.];
+@ bx.Zippy[146] = [I don\'t understand the HUMOUR of the THREE STOOGES!!];
+@ bx.Zippy[147] = [I feel ... JUGULAR ...];
+@ bx.Zippy[148] = [I feel better about world problems now!];
+@ bx.Zippy[149] = [I feel like a wet parking meter on Darvon!];
+@ bx.Zippy[150] = [I feel like I am sharing a ``CORN-DOG\'\' with NIKITA KHRUSCHEV ...];
+@ bx.Zippy[151] = [I feel like I\'m in a Toilet Bowl with a thumbtack in my forehead!!];
+@ bx.Zippy[152] = [I feel partially hydrogenated!];
+@ bx.Zippy[153] = [I fill MY industrial waste containers with old copies of the "WATCHTOWER" and then add HAWAIIAN PUNCH to the top ...  They look NICE in the yard ...];
+@ bx.Zippy[154] = [I guess it was all a DREAM ... or an episode of HAWAII FIVE-O ...];
+@ bx.Zippy[155] = [I guess you guys got BIG MUSCLES from doing too much STUDYING!];
+@ bx.Zippy[156] = [I had a lease on an OEDIPUS COMPLEX back in \'81 ...];
+@ bx.Zippy[157] = [I had pancake makeup for brunch!];
+@ bx.Zippy[158] = [I have a TINY BOWL in my HEAD];
+@ bx.Zippy[159] = [I have a very good DENTAL PLAN.  Thank you.];
+@ bx.Zippy[160] = [I have a VISION!  It\'s a RANCID double-FISHWICH on an ENRICHED BUN!!];
+@ bx.Zippy[161] = [I have accepted Provolone into my life!];
+@ bx.Zippy[162] = [I have many CHARTS and DIAGRAMS..];
+@ bx.Zippy[163] = [... I have read the INSTRUCTIONS ...];
+@ bx.Zippy[164] = [-- I have seen the FUN --];
+@ bx.Zippy[165] = [I have seen these EGG EXTENDERS in my Supermarket ...];
+@ bx.Zippy[166] = [I have seen these EGG EXTENDERS in my Supermarket ... I have read the INSTRUCTIONS ...];
+@ bx.Zippy[167] = [I have the power to HALT PRODUCTION on all TEENAGE SEX COMEDIES!!];
+@ bx.Zippy[168] = [I HAVE to buy a new "DODGE MISER" and two dozen JORDACHE JEANS because my viewscreen is "USER-FRIENDLY"!!];
+@ bx.Zippy[169] = [I haven\'t been married in over six years, but we had sexual counseling every day from Oral Roberts!!];
+@ bx.Zippy[170] = [I hope I bought the right relish ... zzzzzzzzz ...];
+@ bx.Zippy[171] = [I hope something GOOD came in the mail today so I have a REASON to live!!];
+@ bx.Zippy[172] = [I hope the ``Eurythmics\'\' practice birth control ...];
+@ bx.Zippy[173] = [I hope you millionaires are having fun!  I just invested half your life savings in yeast!!];
+@ bx.Zippy[174] = [I invented skydiving in 1989!];
+@ bx.Zippy[175] = [I joined scientology at a garage sale!!];
+@ bx.Zippy[176] = [I just forgot my whole philosophy of life!!!];
+@ bx.Zippy[177] = [I just got my PRINCE bumper sticker ... But now I can\'t remember WHO he is ...];
+@ bx.Zippy[178] = [I just had a NOSE JOB!!];
+@ bx.Zippy[179] = [I just had my entire INTESTINAL TRACT coated with TEFLON!];
+@ bx.Zippy[180] = [I just heard the SEVENTIES were over!!  And I was just getting in touch with my LEISURE SUIT!!];
+@ bx.Zippy[181] = [I just remembered something about a TOAD!];
+@ bx.Zippy[182] = [I KAISER ROLL?!  What good is a Kaiser Roll without a little COLE SLAW on the SIDE?];
+@ bx.Zippy[183] = [I Know A Joke];
+@ bx.Zippy[184] = [I know how to do SPECIAL EFFECTS!!];
+@ bx.Zippy[185] = [I know th\'MAMBO!!  I have a TWO-TONE CHEMISTRY SET!!];
+@ bx.Zippy[186] = [I know things about TROY DONAHUE that can\'t even be PRINTED!!];
+@ bx.Zippy[187] = [I left my WALLET in the BATHROOM!!];
+@ bx.Zippy[188] = [I like the way ONLY their mouths move ...  They look like DYING OYSTERS];
+@ bx.Zippy[189] = [I like your SNOOPY POSTER!!];
+@ bx.Zippy[190] = [-- I love KATRINKA because she drives a PONTIAC.  We\'re going away now.  I fed the cat.];
+@ bx.Zippy[191] = [I love ROCK \'N ROLL!  I memorized the all WORDS to "WIPE-OUT" in 1965!!];
+@ bx.Zippy[192] = [I need to discuss BUY-BACK PROVISIONS with at least six studio SLEAZEBALLS!!];
+@ bx.Zippy[193] = [I once decorated my apartment entirely in ten foot salad forks!!];
+@ bx.Zippy[194] = [I own seven-eighths of all the artists in downtown Burbank!];
+@ bx.Zippy[195] = [I put aside my copy of "BOWLING WORLD" and think about GUN CONTROL legislation..];
+@ bx.Zippy[196] = [I represent a sardine!!];
+@ bx.Zippy[197] = [I request a weekend in Havana with Phil Silvers!];
+@ bx.Zippy[198] = [... I see TOILET SEATS ...];
+@ bx.Zippy[199] = [I selected E5 ... but I didn\'t hear "Sam the Sham and the Pharoahs"!];
+@ bx.Zippy[200] = [I smell a RANCID CORN DOG!];
+@ bx.Zippy[201] = [I smell like a wet reducing clinic on Columbus Day!];
+@ bx.Zippy[202] = [I think I am an overnight sensation right now!!];
+@ bx.Zippy[203] = [... I think I\'d better go back to my DESK and toy with a few common MISAPPREHENSIONS ...];
+@ bx.Zippy[204] = [I think I\'ll KILL myself by leaping out of this 14th STORY WINDOW while reading ERICA JONG\'S poetry!!];
+@ bx.Zippy[205] = [I think my career is ruined!];
+@ bx.Zippy[206] = [I used to be a FUNDAMENTALIST, but then I heard about the HIGH RADIATION LEVELS and bought an ENCYCLOPEDIA!!];
+@ bx.Zippy[207] = [... I want a COLOR T.V. and a VIBRATING BED!!!];
+@ bx.Zippy[208] = [I want a VEGETARIAN BURRITO to go ... with EXTRA MSG!!];
+@ bx.Zippy[209] = [I want a WESSON OIL lease!!];
+@ bx.Zippy[210] = [I want another RE-WRITE on my CEASAR SALAD!!];
+@ bx.Zippy[211] = [I want EARS!  I want two ROUND BLACK EARS to make me feel warm \'n secure!!];
+@ bx.Zippy[212] = [... I want FORTY-TWO TRYNEL FLOATATION SYSTEMS installed within SIX AND A HALF HOURS!!!];
+@ bx.Zippy[213] = [I want the presidency so bad I can already taste the hors d\'oeuvres.];
+@ bx.Zippy[214] = [I want to dress you up as TALLULAH BANKHEAD and cover you with VASELINE and WHEAT THINS ...];
+@ bx.Zippy[215] = [I want to kill everyone here with a cute colorful Hydrogen Bomb!!];
+@ bx.Zippy[216] = [I want to perform cranial activities with Tuesday Weld!!];
+@ bx.Zippy[217] = [... I want to perform cranial activities with Tuesday Weld!!];
+@ bx.Zippy[218] = [I want to read my new poem about pork brains and outer space ...];
+@ bx.Zippy[219] = [I want to so HAPPY, the VEINS in my neck STAND OUT!!];
+@ bx.Zippy[220] = [I want you to MEMORIZE the collected poems of EDNA ST VINCENT MILLAY ... BACKWARDS!!];
+@ bx.Zippy[221] = [I want you to organize my PASTRY trays ... my TEA-TINS are gleaming in formation like a ROW of DRUM MAJORETTES -- please don\'t be FURIOUS with me --];
+@ bx.Zippy[222] = [I was born in a Hostess Cupcake factory before the sexual revolution!];
+@ bx.Zippy[223] = [I was making donuts and now I\'m on a bus!];
+@ bx.Zippy[224] = [I wish I was a sex-starved manicurist found dead in the Bronx!!];
+@ bx.Zippy[225] = [I wish I was on a Cincinnati street corner holding a clean dog!];
+@ bx.Zippy[226] = [I wonder if BOB GUCCIONE has these problems!];
+@ bx.Zippy[227] = [I wonder if I could ever get started in the credit world?];
+@ bx.Zippy[228] = [I wonder if I ought to tell them about my PREVIOUS LIFE as a COMPLETE STRANGER?];
+@ bx.Zippy[229] = [I wonder if I should put myself in ESCROW!!];
+@ bx.Zippy[230] = [I wonder if there\'s anything GOOD on tonight?];
+@ bx.Zippy[231] = [I would like to urinate in an OVULAR, porcelain pool --];
+@ bx.Zippy[232] = [I\'d like MY data-base JULIENNED and stir-fried!];
+@ bx.Zippy[233] = [I\'d like some JUNK FOOD ... and then I want to be ALONE --];
+@ bx.Zippy[234] = [I\'ll eat ANYTHING that\'s BRIGHT BLUE!!];
+@ bx.Zippy[235] = [I\'ll show you MY telex number if you show me YOURS ...];
+@ bx.Zippy[236] = [I\'m a fuschia bowling ball somewhere in Brittany];
+@ bx.Zippy[237] = [I\'m a GENIUS!  I want to dispute sentence structure with SUSAN SONTAG!!];
+@ bx.Zippy[238] = [I\'m a nuclear submarine under the polar ice cap and I need a Kleenex!];
+@ bx.Zippy[239] = [I\'m also against BODY-SURFING!!];
+@ bx.Zippy[240] = [I\'m also pre-POURED pre-MEDITATED and pre-RAPHAELITE!!];
+@ bx.Zippy[241] = [I\'m ANN LANDERS!!  I can SHOPLIFT!!];
+@ bx.Zippy[242] = [I\'m changing the CHANNEL ... But all I get is commercials for "RONCO MIRACLE BAMBOO STEAMERS"!];
+@ bx.Zippy[243] = [I\'m continually AMAZED at th\'breathtaking effects of WIND EROSION!!];
+@ bx.Zippy[244] = [I\'m definitely not in Omaha!];
+@ bx.Zippy[245] = [I\'m DESPONDENT ... I hope there\'s something DEEP-FRIED under this miniature DOMED STADIUM ...];
+@ bx.Zippy[246] = [I\'m dressing up in an ill-fitting IVY-LEAGUE SUIT!!  Too late...];
+@ bx.Zippy[247] = [I\'m EMOTIONAL now because I have MERCHANDISING CLOUT!!];
+@ bx.Zippy[248] = [I\'m encased in the lining of a pure pork sausage!!];
+@ bx.Zippy[249] = [I\'m GLAD I remembered to XEROX all my UNDERSHIRTS!!];
+@ bx.Zippy[250] = [I\'m gliding over a NUCLEAR WASTE DUMP near ATLANTA, Georgia!!];
+@ bx.Zippy[251] = [I\'m having a BIG BANG THEORY!!];
+@ bx.Zippy[252] = [I\'m having a MID-WEEK CRISIS!];
+@ bx.Zippy[253] = [I\'m having a RELIGIOUS EXPERIENCE ... and I don\'t take any DRUGS];
+@ bx.Zippy[254] = [I\'m having a tax-deductible experience!  I need an energy crunch!!];
+@ bx.Zippy[255] = [I\'m having an emotional outburst!!];
+@ bx.Zippy[256] = [I\'m having an EMOTIONAL OUTBURST!!  But, uh, WHY is there a WAFFLE in my PAJAMA POCKET??];
+@ bx.Zippy[257] = [I\'m having BEAUTIFUL THOUGHTS about the INSIPID WIVES of smug and wealthy CORPORATE LAWYERS ...];
+@ bx.Zippy[258] = [I\'m having fun HITCHHIKING to CINCINNATI or FAR ROCKAWAY!!];
+@ bx.Zippy[259] = [... I\'m IMAGINING a sensuous GIRAFFE, CAVORTING in the BACK ROOM of a KOSHER DELI --];
+@ bx.Zippy[260] = [I\'m in direct contact with many advanced fun CONCEPTS.];
+@ bx.Zippy[261] = [I\'m into SOFTWARE!];
+@ bx.Zippy[262] = [I\'m meditating on the FORMALDEHYDE and the ASBESTOS leaking into my PERSONAL SPACE!!];
+@ bx.Zippy[263] = [I\'m mentally OVERDRAWN!  What\'s that SIGNPOST up ahead?  Where\'s ROD STERLING when you really need him?];
+@ bx.Zippy[264] = [I\'m not an Iranian!!  I voted for Dianne Feinstein!!];
+@ bx.Zippy[265] = [I\'m not available for comment..];
+@ bx.Zippy[266] = [I\'m pretending I\'m pulling in a TROUT!  Am I doing it correctly??];
+@ bx.Zippy[267] = [I\'m pretending that we\'re all watching PHIL SILVERS instead of RICARDO MONTALBAN!];
+@ bx.Zippy[268] = [I\'m QUIETLY reading the latest issue of "BOWLING WORLD" while my wife and two children stand QUIETLY BY ...];
+@ bx.Zippy[269] = [I\'m rated PG-34!!];
+@ bx.Zippy[270] = [I\'m receiving a coded message from EUBIE BLAKE!!];
+@ bx.Zippy[271] = [I\'m RELIGIOUS!!  I love a man with a HAIRPIECE!!  Equip me with MISSILES!!];
+@ bx.Zippy[272] = [I\'m reporting for duty as a modern person.  I want to do the Latin Hustle now!];
+@ bx.Zippy[273] = [I\'m shaving!!  I\'M SHAVING!!];
+@ bx.Zippy[274] = [I\'m sitting on my SPEED QUEEN ... To me, it\'s ENJOYABLE ... I\'m WARM ... I\'m VIBRATORY ...];
+@ bx.Zippy[275] = [I\'m thinking about DIGITAL READ-OUT systems and computer-generated IMAGE FORMATIONS ...];
+@ bx.Zippy[276] = [I\'m totally DESPONDENT over the LIBYAN situation and the price of CHICKEN ...];
+@ bx.Zippy[277] = [I\'m using my X-RAY VISION to obtain a rare glimpse of the INNER WORKINGS of this POTATO!!];
+@ bx.Zippy[278] = [I\'m wearing PAMPERS!!];
+@ bx.Zippy[279] = [I\'m wet!  I\'m wild!];
+@ bx.Zippy[280] = [I\'m young ... I\'m HEALTHY ... I can HIKE THRU CAPT GROGAN\'S LUMBAR REGIONS!];
+@ bx.Zippy[281] = [I\'m ZIPPY the PINHEAD and I\'m totally committed to the festive mode.];
+@ bx.Zippy[282] = [I\'ve got a COUSIN who works in the GARMENT DISTRICT ...];
+@ bx.Zippy[283] = [I\'ve got an IDEA!!  Why don\'t I STARE at you so HARD, you forget your SOCIAL SECURITY NUMBER!!];
+@ bx.Zippy[284] = [I\'ve read SEVEN MILLION books!!];
+@ bx.Zippy[285] = [... ich bin in einem dusenjet ins jahr 53 vor chr ... ich lande im antiken Rom ...  einige gladiatoren spielen scrabble ... ich rieche PIZZA ...];
+@ bx.Zippy[286] = [If a person is FAMOUS in this country, they have to go on the ROAD for MONTHS at a time and have their name misspelled on the SIDE of a GREYHOUND SCENICRUISER!!];
+@ bx.Zippy[287] = [If elected, Zippy pledges to each and every American a 55-year-old houseboy ...];
+@ bx.Zippy[288] = [If I am elected no one will ever have to do their laundry again!];
+@ bx.Zippy[289] = [If I am elected, the concrete barriers around the WHITE HOUSE will be replaced by tasteful foam replicas of ANN MARGARET!];
+@ bx.Zippy[290] = [If I felt any more SOPHISTICATED I would DIE of EMBARRASSMENT!];
+@ bx.Zippy[291] = [If I had a Q-TIP, I could prevent th\' collapse of NEGOTIATIONS!!];
+@ bx.Zippy[292] = [... If I had heart failure right now, I couldn\'t be a more fortunate man!!];
+@ bx.Zippy[293] = [If I pull this SWITCH I\'ll be RITA HAYWORTH!!  Or a SCIENTOLOGIST!];
+@ bx.Zippy[294] = [if it GLISTENS, gobble it!!];
+@ bx.Zippy[295] = [If our behavior is strict, we do not need fun!];
+@ bx.Zippy[296] = [If Robert Di Niro assassinates Walter Slezak, will Jodie Foster marry Bonzo??];
+@ bx.Zippy[297] = [In 1962, you could buy a pair of SHARKSKIN SLACKS, with a "Continental Belt," for $$10.99!!];
+@ bx.Zippy[298] = [In Newark the laundromats are open 24 hours a day!];
+@ bx.Zippy[299] = [INSIDE, I have the same personality disorder as LUCY RICARDO!!];
+@ bx.Zippy[300] = [Inside, I\'m already SOBBING!];
+@ bx.Zippy[301] = [... I\'m VIBRATORY ...];
+@ bx.Zippy[302] = [Is he the MAGIC INCA carrying a FROG on his shoulders??  Is the FROG his GUIDELIGHT??  It is curious that a DOG runs already on the ESCALATOR ...];
+@ bx.Zippy[303] = [Is it 1974?  What\'s for SUPPER?  Can I spend my COLLEGE FUND in one wild afternoon??];
+@ bx.Zippy[304] = [Is it clean in other dimensions?];
+@ bx.Zippy[305] = [Is it NOUVELLE CUISINE when 3 olives are struggling with a scallop in a plate of SAUCE MORNAY?];
+@ bx.Zippy[306] = [Is something VIOLENT going to happen to a GARBAGE CAN?];
+@ bx.Zippy[307] = [Is this an out-take from the "BRADY BUNCH"?];
+@ bx.Zippy[308] = [Is this going to involve RAW human ecstasy?];
+@ bx.Zippy[309] = [Is this TERMINAL fun?];
+@ bx.Zippy[310] = [Is this the line for the latest whimsical YUGOSLAVIAN drama which also makes you want to CRY and reconsider the VIETNAM WAR?];
+@ bx.Zippy[311] = [Isn\'t this my STOP?!];
+@ bx.Zippy[312] = [It don\'t mean a THING if you ain\'t got that SWING!!];
+@ bx.Zippy[313] = [It was a JOKE!!  Get it??  I was receiving messages from DAVID LETTERMAN!!  YOW!!];
+@ bx.Zippy[314] = [It\'s a lot of fun being alive ... I wonder if my bed is made?!?];
+@ bx.Zippy[315] = [It\'s NO USE ... I\'ve gone to "CLUB MED"!!];
+@ bx.Zippy[316] = [It\'s OBVIOUS ... The FURS never reached ISTANBUL ... You were an EXTRA in the REMAKE of "TOPKAPI" ... Go home to your WIFE ... She\'s making FRENCH TOAST!];
+@ bx.Zippy[317] = [It\'s OKAY -- I\'m an INTELLECTUAL, too.];
+@ bx.Zippy[318] = [It\'s the RINSE CYCLE!!  They\'ve ALL IGNORED the RINSE CYCLE!!];
+@ bx.Zippy[319] = [JAPAN is a WONDERFUL planet -- I wonder if we\'ll ever reach their level of COMPARATIVE SHOPPING ...];
+@ bx.Zippy[320] = [Jesuit priests are DATING CAREER DIPLOMATS!!];
+@ bx.Zippy[321] = [Jesus is my POSTMASTER GENERAL ...];
+@ bx.Zippy[322] = [Kids, don\'t gross me off ... "Adventures with MENTAL HYGIENE" can be carried too FAR!];
+@ bx.Zippy[323] = [Kids, the seven basic food groups are GUM, PUFF PASTRY, PIZZA, PESTICIDES, ANTIBIOTICS, NUTRA-SWEET and MILK DUDS!!];
+@ bx.Zippy[324] = [Laundry is the fifth dimension!!  ... um ... um ... th\' washing machine is a black hole and the pink socks are bus drivers who just fell in!!];
+@ bx.Zippy[325] = [LBJ, LBJ, how many JOKES did you tell today??!];
+@ bx.Zippy[326] = [Leona, I want to CONFESS things to you ... I want to WRAP you in a SCARLET ROBE trimmed with POLYVINYL CHLORIDE ... I want to EMPTY your ASHTRAYS ...];
+@ bx.Zippy[327] = [Let me do my TRIBUTE to FISHNET STOCKINGS ...];
+@ bx.Zippy[328] = [Let\'s all show human CONCERN for REVERAND MOON\'s legal difficulties!!];
+@ bx.Zippy[329] = [Let\'s send the Russians defective lifestyle accessories!];
+@ bx.Zippy[330] = [Life is a POPULARITY CONTEST!  I\'m REFRESHINGLY CANDID!!];
+@ bx.Zippy[331] = [Like I always say -- nothing can beat the BRATWURST here in DUSSELDORF!!];
+@ bx.Zippy[332] = [Loni Anderson\'s hair should be LEGALIZED!!];
+@ bx.Zippy[333] = [Look DEEP into the OPENINGS!!  Do you see any ELVES or EDSELS ... or a HIGHBALL?? ...];
+@ bx.Zippy[334] = [Look into my eyes and try to forget that you have a Macy\'s charge card!];
+@ bx.Zippy[335] = [Look!  A ladder!  Maybe it leads to heaven, or a sandwich!];
+@ bx.Zippy[336] = [LOOK!!  Sullen American teens wearing MADRAS shorts and "Flock of Seagulls" HAIRCUTS!];
+@ bx.Zippy[337] = [Make me look like LINDA RONSTADT again!!];
+@ bx.Zippy[338] = [Mary Tyler Moore\'s SEVENTH HUSBAND is wearing my DACRON TANK TOP in a cheap hotel in HONOLULU!];
+@ bx.Zippy[339] = [Maybe we could paint GOLDIE HAWN a rich PRUSSIAN BLUE --];
+@ bx.Zippy[340] = [MERYL STREEP is my obstetrician!];
+@ bx.Zippy[341] = [MMM-MM!!  So THIS is BIO-NEBULATION!];
+@ bx.Zippy[342] = [Mmmmmm-MMMMMM!!  A plate of STEAMING PIECES of a PIG mixed with the shreds of SEVERAL CHICKENS!! ... Oh BOY!!  I\'m about to swallow a TORN-OFF section of a COW\'S LEFT LEG soaked in COTTONSEED OIL and SUGAR!! ... Let\'s see ... Next, I\'ll have the GROUND-UP flesh of CUTE, BABY LAMBS fried in the MELTED, FATTY TISSUES from a warm-blooded animal someone once PETTED!! ... YUM!!  That was GOOD!!  For DESSERT, I\'ll have a TOFU BURGER with BEAN SPROUTS on a stone-ground, WHOLE WHEAT BUN!!];
+@ bx.Zippy[343] = [Mr and Mrs PED, can I borrow 26.7% of the RAYON TEXTILE production of the INDONESIAN archipelago?];
+@ bx.Zippy[344] = [My Aunt MAUREEN was a military advisor to IKE & TINA TURNER!!];
+@ bx.Zippy[345] = [My BIOLOGICAL ALARM CLOCK just went off ... It has noiseless DOZE FUNCTION and full kitchen!!];
+@ bx.Zippy[346] = [My CODE of ETHICS is vacationing at famed SCHROON LAKE in upstate New York!!];
+@ bx.Zippy[347] = [My EARS are GONE!!];
+@ bx.Zippy[348] = [My face is new, my license is expired, and I\'m under a doctor\'s care!!!!];
+@ bx.Zippy[349] = [My haircut is totally traditional!];
+@ bx.Zippy[350] = [MY income is ALL disposable!];
+@ bx.Zippy[351] = [My LESLIE GORE record is BROKEN ...];
+@ bx.Zippy[352] = [My life is a patio of fun!];
+@ bx.Zippy[353] = [My mind is a potato field ...];
+@ bx.Zippy[354] = [My mind is making ashtrays in Dayton ...];
+@ bx.Zippy[355] = [My nose feels like a bad Ronald Reagan movie ...];
+@ bx.Zippy[356] = [my NOSE is NUMB!];
+@ bx.Zippy[357] = [... My pants just went on a wild rampage through a Long Island Bowling Alley!!];
+@ bx.Zippy[358] = [My pants just went to high school in the Carlsbad Caverns!!!];
+@ bx.Zippy[359] = [My polyvinyl cowboy wallet was made in Hong Kong by Montgomery Clift!];
+@ bx.Zippy[360] = [My uncle Murray conquered Egypt in 53 B.C.  And I can prove it too!!];
+@ bx.Zippy[361] = [My vaseline is RUNNING...];
+@ bx.Zippy[362] = [NANCY!!  Why is everything RED?!];
+@ bx.Zippy[363] = [NATHAN ... your PARENTS were in a CARCRASH!!  They\'re VOIDED -- They COLLAPSED They had no CHAINSAWS ... They had no MONEY MACHINES ... They did PILLS in SKIMPY GRASS SKIRTS ... Nathan, I EMULATED them ... but they were OFF-KEY ...];
+@ bx.Zippy[364] = [NEWARK has been REZONED!!  DES MOINES has been REZONED!!];
+@ bx.Zippy[365] = [Nipples, dimples, knuckles, NICKLES, wrinkles, pimples!!];
+@ bx.Zippy[366] = [Not SENSUOUS ... only "FROLICSOME" ... and in need of DENTAL WORK ... in PAIN!!!];
+@ bx.Zippy[367] = [Now I am depressed ...];
+@ bx.Zippy[368] = [Now I think I just reached the state of HYPERTENSION that comes JUST BEFORE you see the TOTAL at the SAFEWAY CHECKOUT COUNTER!];
+@ bx.Zippy[369] = [Now I understand the meaning of "THE MOD SQUAD"!];
+@ bx.Zippy[370] = [Now I\'m being INVOLUNTARILY shuffled closer to the CLAM DIP with the BROKEN PLASTIC FORKS in it!!];
+@ bx.Zippy[371] = [Now I\'m concentrating on a specific tank battle toward the end of World War II!];
+@ bx.Zippy[372] = [Now I\'m having INSIPID THOUGHTS about the beatiful, round wives of HOLLYWOOD MOVIE MOGULS encased in PLEXIGLASS CARS and being approached by SMALL BOYS selling FRUIT ...];
+@ bx.Zippy[373] = [Now KEN and BARBIE are PERMANENTLY ADDICTED to MIND-ALTERING DRUGS ...];
+@ bx.Zippy[374] = [Now my EMOTIONAL RESOURCES are heavily committed to 23% of the SMELTING and REFINING industry of the state of NEVADA!!];
+@ bx.Zippy[375] = [Now that I have my "APPLE", I comprehend COST ACCOUNTING!!];
+@ bx.Zippy[376] = [... Now, it\'s time to "HAVE A NAGEELA"!!];
+@ bx.Zippy[377] = [Now, let\'s SEND OUT for QUICHE!!];
+@ bx.Zippy[378] = [Of course, you UNDERSTAND about the PLAIDS in the SPIN CYCLE --];
+@ bx.Zippy[379] = [Oh my GOD -- the SUN just fell into YANKEE STADIUM!!];
+@ bx.Zippy[380] = [Oh, I get it!!  "The BEACH goes on", huh, SONNY??];
+@ bx.Zippy[381] = [Okay ... I\'m going home to write the "I HATE RUBIK\'s CUBE HANDBOOK FOR DEAD CAT LOVERS" ...];
+@ bx.Zippy[382] = [OKAY!!  Turn on the sound ONLY for TRYNEL CARPETING, FULLY-EQUIPPED R.V.\'S and FLOATATION SYSTEMS!!];
+@ bx.Zippy[383] = [OMNIVERSAL AWARENESS??  Oh, YEH!!  First you need 4 GALLONS of JELL-O and a BIG WRENCH!! ... I think you drop th\'WRENCH in the JELL-O as if it was a FLAVOR, or an INGREDIENT ... ... or ... I ... um ... WHERE\'S the WASHING MACHINES?];
+@ bx.Zippy[384] = [On SECOND thought, maybe I\'ll heat up some BAKED BEANS and watch REGIS PHILBIN ...  It\'s GREAT to be ALIVE!!];
+@ bx.Zippy[385] = [On the other hand, life can be an endless parade of TRANSSEXUAL QUILTING BEES aboard a cruise ship to DISNEYWORLD if only we let it!!];
+@ bx.Zippy[386] = [On the road, ZIPPY is a pinhead without a purpose, but never without a POINT.];
+@ bx.Zippy[387] = [Once upon a time, four AMPHIBIOUS HOG CALLERS attacked a family of DEFENSELESS, SENSITIVE COIN COLLECTORS and brought DOWN their PROPERTY VALUES!!];
+@ bx.Zippy[388] = [Once, there was NO fun ... This was before MENU planning, FASHION statements or NAUTILUS equipment ... Then, in 1985 ... FUN was completely encoded in this tiny MICROCHIP ... It contain 14,768 vaguely amusing SIT-COM pilots!!  We had to wait FOUR BILLION years but we finally got JERRY LEWIS, MTV and a large selection of creme-filled snack cakes!];
+@ bx.Zippy[389] = [One FISHWICH coming up!!];
+@ bx.Zippy[390] = [ONE:    I will donate my entire "BABY HUEY" comic book collection to 	the downtown PLASMA CENTER ... TWO:	I won\'t START a BAND called "KHADAFY & THE HIT SQUAD" ... THREE:	I won\'t ever TUMBLE DRY my FOX TERRIER again!!];
+@ bx.Zippy[391] = [... or were you driving the PONTIAC that HONKED at me in MIAMI last Tuesday?];
+@ bx.Zippy[392] = [Our father who art in heaven ... I sincerely pray that SOMEBODY at this table will PAY for my SHREDDED WHAT and ENGLISH MUFFIN ... and also leave a GENEROUS TIP ....];
+@ bx.Zippy[393] = [over in west Philadelphia a puppy is vomiting ...];
+@ bx.Zippy[394] = [OVER the underpass!  UNDER the overpass!  Around the FUTURE and BEYOND REPAIR!!];
+@ bx.Zippy[395] = [PARDON me, am I speaking ENGLISH?];
+@ bx.Zippy[396] = [Pardon me, but do you know what it means to be TRULY ONE with your BOOTH!];
+@ bx.Zippy[397] = [PEGGY FLEMMING is stealing BASKET BALLS to feed the babies in VERMONT.];
+@ bx.Zippy[398] = [PIZZA!!];
+@ bx.Zippy[399] = [Place me on a BUFFER counter while you BELITTLE several BELLHOPS in the Trianon Room!!  Let me one of your SUBSIDIARIES!];
+@ bx.Zippy[400] = [Please come home with me ... I have Tylenol!!];
+@ bx.Zippy[401] = [Psychoanalysis??  I thought this was a nude rap session!!!];
+@ bx.Zippy[402] = [PUNK ROCK!!  DISCO DUCK!!  BIRTH CONTROL!!];
+@ bx.Zippy[403] = [Quick, sing me the BUDAPEST NATIONAL ANTHEM!!];
+@ bx.Zippy[404] = [RELATIVES!!];
+@ bx.Zippy[405] = [Remember, in 2039, MOUSSE & PASTA will be available ONLY by prescription!!];
+@ bx.Zippy[406] = [RHAPSODY in Glue!];
+@ bx.Zippy[407] = [SANTA CLAUS comes down a FIRE ESCAPE wearing bright blue LEG WARMERS ... He scrubs the POPE with a mild soap or detergent for 15 minutes, starring JANE FONDA!!];
+@ bx.Zippy[408] = [Send your questions to ``ASK ZIPPY\'\', Box 40474, San Francisco, CA 94140, USA];
+@ bx.Zippy[409] = [SHHHH!!  I hear SIX TATTOOED TRUCK-DRIVERS tossing ENGINE BLOCKS into empty OIL DRUMS ...];
+@ bx.Zippy[410] = [Should I do my BOBBIE VINTON medley?];
+@ bx.Zippy[411] = [Should I get locked in the PRINCICAL\'S OFFICE today -- or have a VASECTOMY??];
+@ bx.Zippy[412] = [Should I start with the time I SWITCHED personalities with a BEATNIK hair stylist or my failure to refer five TEENAGERS to a good OCULIST?];
+@ bx.Zippy[413] = [Sign my PETITION.];
+@ bx.Zippy[414] = [So this is what it feels like to be potato salad];
+@ bx.Zippy[415] = [So, if we convert SUPPLY-SIDE SOYABEAN FUTURES into HIGH-YIELD T-BILL INDICATORS, the PRE-INFLATIONARY risks will DWINDLE to a rate of 2 SHOPPING SPREES per EGGPLANT!!];
+@ bx.Zippy[416] = [someone in DAYTON, Ohio is selling USED CARPETS to a SERBO-CROATIAN];
+@ bx.Zippy[417] = [Sometime in 1993 NANCY SINATRA will lead a BLOODLESS COUP on GUAM!!];
+@ bx.Zippy[418] = [Somewhere in DOWNTOWN BURBANK a prostitute is OVERCOOKING a LAMB CHOP!!];
+@ bx.Zippy[419] = [Somewhere in suburban Honolulu, an unemployed bellhop is whipping up a batch of illegal psilocybin chop suey!!];
+@ bx.Zippy[420] = [Somewhere in Tenafly, New Jersey, a chiropractor is viewing "Leave it to Beaver"!];
+@ bx.Zippy[421] = [Spreading peanut butter reminds me of opera!!  I wonder why?];
+@ bx.Zippy[422] = [TAILFINS!! ... click ...];
+@ bx.Zippy[423] = [	Talking Pinhead Blues: Oh, I LOST my ``HELLO KITTY\'\' DOLL and I get BAD reception on channel     TWENTY-SIX!!  Th\'HOSTESS FACTORY is closin\' down and I just heard ZASU PITTS has been     DEAD for YEARS..  (sniff)  My PLATFORM SHOE collection was CHEWED up by th\' dog, ALEXANDER HAIG     won\'t let me take a SHOWER \'til Easter ... (snurf)  So I went to the kitchen, but WALNUT PANELING whup me upside mah HAID!!     (on no, no, no..  Heh, heh)];
+@ bx.Zippy[424] = [TAPPING?  You POLITICIANS!  Don\'t you realize that the END of the "Wash Cycle" is a TREASURED MOMENT for most people?!];
+@ bx.Zippy[425] = [Tex SEX!  The HOME of WHEELS!  The dripping of COFFEE!!  Take me to Minnesota but don\'t EMBARRASS me!!];
+@ bx.Zippy[426] = [Th\' MIND is the Pizza Palace of th\' SOUL];
+@ bx.Zippy[427] = [Thank god!! ... It\'s HENNY YOUNGMAN!!];
+@ bx.Zippy[428] = [The appreciation of the average visual graphisticator alone is worth the whole suaveness and decadence which abounds!!];
+@ bx.Zippy[429] = [The entire CHINESE WOMEN\'S VOLLEYBALL TEAM all share ONE personality -- and have since BIRTH!!];
+@ bx.Zippy[430] = [The fact that 47 PEOPLE are yelling and sweat is cascading down my SPINAL COLUMN is fairly enjoyable!!];
+@ bx.Zippy[431] = [The FALAFEL SANDWICH lands on my HEAD and I become a VEGETARIAN ...];
+@ bx.Zippy[432] = [... the HIGHWAY is made out of LIME JELLO and my HONDA is a barbequeued OYSTER!  Yum!];
+@ bx.Zippy[433] = [The Korean War must have been fun.];
+@ bx.Zippy[434] = [... the MYSTERIANS are in here with my CORDUROY SOAP DISH!!];
+@ bx.Zippy[435] = [The Osmonds!  You are all Osmonds!!  Throwing up on a freeway at dawn!!!];
+@ bx.Zippy[436] = [The PILLSBURY DOUGHBOY is CRYING for an END to BURT REYNOLDS movies!!];
+@ bx.Zippy[437] = [The PINK SOCKS were ORIGINALLY from 1952!!  But they went to MARS around 1953!!];
+@ bx.Zippy[438] = [The SAME WAVE keeps coming in and COLLAPSING like a rayon MUU-MUU ...];
+@ bx.Zippy[439] = [There\'s a little picture of ED MCMAHON doing BAD THINGS to JOAN RIVERS in a $$200,000 MALIBU BEACH HOUSE!!];
+@ bx.Zippy[440] = [There\'s enough money here to buy 5000 cans of Noodle-Roni!];
+@ bx.Zippy[441] = [These PRESERVES should be FORCE-FED to PENTAGON OFFICIALS!!];
+@ bx.Zippy[442] = [They collapsed ... like nuns in the street ... they had no teen appeal!];
+@ bx.Zippy[443] = [This ASEXUAL PIG really BOILS my BLOOD ... He\'s so ... so ... URGENT!!];
+@ bx.Zippy[444] = [This is a NO-FRILLS flight -- hold th\' CANADIAN BACON!!];
+@ bx.Zippy[445] = [This MUST be a good party -- My RIB CAGE is being painfully pressed up against someone\'s MARTINI!!];
+@ bx.Zippy[446] = [... this must be what it\'s like to be a COLLEGE GRADUATE!!];
+@ bx.Zippy[447] = [This PIZZA symbolizes my COMPLETE EMOTIONAL RECOVERY!!];
+@ bx.Zippy[448] = [This PORCUPINE knows his ZIPCODE ... And he has "VISA"!!];
+@ bx.Zippy[449] = [This TOPS OFF my partygoing experience!  Someone I DON\'T LIKE is talking to me about a HEART-WARMING European film ...];
+@ bx.Zippy[450] = [Those aren\'t WINOS -- that\'s my JUGGLER, my AERIALIST, my SWORD SWALLOWER, and my LATEX NOVELTY SUPPLIER!!];
+@ bx.Zippy[451] = [Thousands of days of civilians ... have produced a ... feeling for the aesthetic modules --];
+@ bx.Zippy[452] = [Today, THREE WINOS from DETROIT sold me a framed photo of TAB HUNTER before his MAKEOVER!];
+@ bx.Zippy[453] = [Toes, knees, NIPPLES.  Toes, knees, nipples, KNUCKLES ... Nipples, dimples, knuckles, NICKLES, wrinkles, pimples!!];
+@ bx.Zippy[454] = [TONY RANDALL!  Is YOUR life a PATIO of FUN??];
+@ bx.Zippy[455] = [Uh-oh -- WHY am I suddenly thinking of a VENERABLE religious leader frolicking on a FORT LAUDERDALE weekend?];
+@ bx.Zippy[456] = [Uh-oh!!  I forgot to submit to COMPULSORY URINALYSIS!];
+@ bx.Zippy[457] = [UH-OH!!  I put on "GREAT HEAD-ON TRAIN COLLISIONS of the 50\'s" by mistake!!!];
+@ bx.Zippy[458] = [UH-OH!!  I think KEN is OVER-DUE on his R.V. PAYMENTS and HE\'S having a NERVOUS BREAKDOWN too!!  Ha ha.];
+@ bx.Zippy[459] = [Uh-oh!!  I\'m having TOO MUCH FUN!!];
+@ bx.Zippy[460] = [UH-OH!!  We\'re out of AUTOMOBILE PARTS and RUBBER GOODS!];
+@ bx.Zippy[461] = [Used staples are good with SOY SAUCE!];
+@ bx.Zippy[462] = [VICARIOUSLY experience some reason to LIVE!!];
+@ bx.Zippy[463] = [Vote for ME -- I\'m well-tapered, half-cocked, ill-conceived and TAX-DEFERRED!];
+@ bx.Zippy[464] = [Wait ... is this a FUN THING or the END of LIFE in Petticoat Junction??];
+@ bx.Zippy[465] = [Was my SOY LOAF left out in th\'RAIN?  It tastes REAL GOOD!!];
+@ bx.Zippy[466] = [We are now enjoying total mutual interaction in an imaginary hot tub ...];
+@ bx.Zippy[467] = [We have DIFFERENT amounts of HAIR --];
+@ bx.Zippy[468] = [We just joined the civil hair patrol!];
+@ bx.Zippy[469] = [We place two copies of PEOPLE magazine in a DARK, HUMID mobile home. 45 minutes later CYNDI LAUPER emerges wearing a BIRD CAGE on her head!];
+@ bx.Zippy[470] = [Well, here I am in AMERICA..  I LIKE it.  I HATE it.  I LIKE it.  I HATE it.  I LIKE it.  I HATE it.  I LIKE it.  I HATE it.  I LIKE ... EMOTIONS are SWEEPING over me!!];
+@ bx.Zippy[471] = [Well, I\'m a classic ANAL RETENTIVE!!  And I\'m looking for a way to VICARIOUSLY experience some reason to LIVE!!];
+@ bx.Zippy[472] = [Well, I\'m INVISIBLE AGAIN ... I might as well pay a visit to the LADIES ROOM ...];
+@ bx.Zippy[473] = [Well, O.K.  I\'ll compromise with my principles because of EXISTENTIAL DESPAIR!];
+@ bx.Zippy[474] = [Were these parsnips CORRECTLY MARINATED in TACO SAUCE?];
+@ bx.Zippy[475] = [What a COINCIDENCE!  I\'m an authorized "SNOOTS OF THE STARS" dealer!!];
+@ bx.Zippy[476] = [What GOOD is a CARDBOARD suitcase ANYWAY?];
+@ bx.Zippy[477] = [What I need is a MATURE RELATIONSHIP with a FLOPPY DISK ...];
+@ bx.Zippy[478] = [What I want to find out is -- do parrots know much about Astro-Turf?];
+@ bx.Zippy[479] = [What PROGRAM are they watching?];
+@ bx.Zippy[480] = [What UNIVERSE is this, please??];
+@ bx.Zippy[481] = [What\'s the MATTER Sid? ... Is your BEVERAGE unsatisfactory?];
+@ bx.Zippy[482] = [When I met th\'POPE back in \'58, I scrubbed him with a MILD SOAP or DETERGENT for 15 minutes.  He seemed to enjoy it ...];
+@ bx.Zippy[483] = [When this load is DONE I think I\'ll wash it AGAIN ...];
+@ bx.Zippy[484] = [When you get your PH.D. will you get able to work at BURGER KING?];
+@ bx.Zippy[485] = [When you said "HEAVILY FORESTED" it reminded me of an overdue CLEANING BILL ... Don\'t you SEE?  O\'Grogan SWALLOWED a VALUABLE COIN COLLECTION and HAD to murder the ONLY MAN who KNEW!!];
+@ bx.Zippy[486] = [Where do your SOCKS go when you lose them in th\' WASHER?];
+@ bx.Zippy[487] = [Where does it go when you flush?];
+@ bx.Zippy[488] = [Where\'s SANDY DUNCAN?];
+@ bx.Zippy[489] = [Where\'s th\' DAFFY DUCK EXHIBIT??];
+@ bx.Zippy[490] = [Where\'s the Coke machine?  Tell me a joke!!];
+@ bx.Zippy[491] = [While my BRAINPAN is being refused service in BURGER KING, Jesuit priests are DATING CAREER DIPLOMATS!!];
+@ bx.Zippy[492] = [While you\'re chewing, think of STEVEN SPIELBERG\'S bank account ...  his will have the same effect as two "STARCH BLOCKERS"!];
+@ bx.Zippy[493] = [WHO sees a BEACH BUNNY sobbing on a SHAG RUG?!];
+@ bx.Zippy[494] = [WHOA!!  Ken and Barbie are having TOO MUCH FUN!!  It must be the NEGATIVE IONS!!];
+@ bx.Zippy[495] = [Why are these athletic shoe salesmen following me??];
+@ bx.Zippy[496] = [Why don\'t you ever enter any CONTESTS, Marvin??  Don\'t you know your own ZIPCODE?];
+@ bx.Zippy[497] = [Why is everything made of Lycra Spandex?];
+@ bx.Zippy[498] = [Why is it that when you DIE, you can\'t take your HOME ENTERTAINMENT CENTER with you??];
+@ bx.Zippy[499] = [Will it improve my CASH FLOW?];
+@ bx.Zippy[500] = [Will the third world war keep "Bosom Buddies" off the air?];
+@ bx.Zippy[501] = [Will this never-ending series of PLEASURABLE EVENTS never cease?];
+@ bx.Zippy[502] = [With YOU, I can be MYSELF ...  We don\'t NEED Dan Rather ...];
+@ bx.Zippy[503] = [World War III?  No thanks!];
+@ bx.Zippy[504] = [World War Three can be averted by adherence to a strictly enforced dress code!];
+@ bx.Zippy[505] = [Wow!  Look!!  A stray meatball!!  Let\'s interview it!];
+@ bx.Zippy[506] = [Xerox your lunch and file it under "sex offenders"!];
+@ bx.Zippy[507] = [Yes, but will I see the EASTER BUNNY in skintight leather at an IRON MAIDEN concert?];
+@ bx.Zippy[508] = [You can\'t hurt me!!  I have an ASSUMABLE MORTGAGE!!];
+@ bx.Zippy[509] = [You mean now I can SHOOT YOU in the back and further BLUR th\' distinction between FANTASY and REALITY?];
+@ bx.Zippy[510] = [You mean you don\'t want to watch WRESTLING from ATLANTA?];
+@ bx.Zippy[511] = [YOU PICKED KARL MALDEN\'S NOSE!!];
+@ bx.Zippy[512] = [You should all JUMP UP AND DOWN for TWO HOURS while I decide on a NEW CAREER!!];
+@ bx.Zippy[513] = [You were s\'posed to laugh!];
+@ bx.Zippy[514] = [YOU!!  Give me the CUTEST, PINKEST, most charming little VICTORIAN DOLLHOUSE you can find!!  An make it SNAPPY!!];
+@ bx.Zippy[515] = [Your CHEEKS sit like twin NECTARINES above a MOUTH that knows no BOUNDS --];
+@ bx.Zippy[516] = [Youth of today!  Join me in a mass rally for traditional mental attitudes!];
+@ bx.Zippy[517] = [Yow!];
+@ bx.Zippy[518] = [Yow!  Am I having fun yet?];
+@ bx.Zippy[519] = [Yow!  Am I in Milwaukee?];
+@ bx.Zippy[520] = [Yow!  And then we could sit on the hoods of cars at stop lights!];
+@ bx.Zippy[521] = [Yow!  Are we laid back yet?];
+@ bx.Zippy[522] = [Yow!  Are we wet yet?];
+@ bx.Zippy[523] = [Yow!  Are you the self-frying president?];
+@ bx.Zippy[524] = [Yow!  Did something bad happen or am I in a drive-in movie??];
+@ bx.Zippy[525] = [Yow!  I just went below the poverty line!];
+@ bx.Zippy[526] = [Yow!  I threw up on my window!];
+@ bx.Zippy[527] = [Yow!  I want my nose in lights!];
+@ bx.Zippy[528] = [Yow!  I want to mail a bronzed artichoke to Nicaragua!];
+@ bx.Zippy[529] = [Yow!  I\'m having a quadrophonic sensation of two winos alone in a steel mill!];
+@ bx.Zippy[530] = [Yow!  I\'m imagining a surfer van filled with soy sauce!];
+@ bx.Zippy[531] = [Yow!  Is my fallout shelter termite proof?];
+@ bx.Zippy[532] = [Yow!  Is this sexual intercourse yet??  Is it, huh, is it??];
+@ bx.Zippy[533] = [Yow!  It\'s a hole all the way to downtown Burbank!];
+@ bx.Zippy[534] = [Yow!  It\'s some people inside the wall!  This is better than mopping!];
+@ bx.Zippy[535] = [Yow!  Maybe I should have asked for my Neutron Bomb in PAISLEY --];
+@ bx.Zippy[536] = [Yow!  Now I get to think about all the BAD THINGS I did to a BOWLING BALL when I was in JUNIOR HIGH SCHOOL!];
+@ bx.Zippy[537] = [Yow!  Now we can become alcoholics!];
+@ bx.Zippy[538] = [Yow!  Those people look exactly like Donnie and Marie Osmond!!];
+@ bx.Zippy[539] = [Yow!  We\'re going to a new disco!];
+@ bx.Zippy[540] = [YOW!!  Everybody out of the GENETIC POOL!];
+@ bx.Zippy[541] = [YOW!!  I\'m in a very clever and adorable INSANE ASYLUM!!];
+@ bx.Zippy[542] = [YOW!!  Now I understand advanced MICROBIOLOGY and th\' new TAX REFORM laws!!];
+@ bx.Zippy[543] = [YOW!!  The land of the rising SONY!!];
+@ bx.Zippy[544] = [YOW!!  Up ahead!  It\'s a DONUT HUT!!];
+@ bx.Zippy[545] = [YOW!!  What should the entire human race DO??  Consume a fifth of CHIVAS REGAL, ski NUDE down MT. EVEREST, and have a wild SEX WEEKEND!];
+@ bx.Zippy[546] = [YOW!!!  I am having fun!!!];
+@ bx.Zippy[547] = [Zippy\'s brain cells are straining to bridge synapses ...];
+
+@ bx.ZippyNum = 547;
+
+if ([$bv.m.Ping]==[]) {@ bv.m.Ping = [.zippy.]}
+if ([$bv.m.Finger]==[]) {@ bv.m.Finger = [.zippy.]}
+
+
+/* Slap - Orig mIRC Slap by _BadCRC_ ported to ircII-EPIC by TaCo
+   -------------------------------------------------------------- */
+@ bx.slap.adj[0] = [a lubricated];
+@ bx.slap.adj[1] = [a bloody];
+@ bx.slap.adj[2] = [a flaming];
+@ bx.slap.adj[3] = [a raunchy];
+@ bx.slap.adj[4] = [a fosilized];
+@ bx.slap.adj[5] = [a frozen];
+@ bx.slap.adj[6] = [a burned];
+@ bx.slap.adj[7] = [an ebola infested];
+@ bx.slap.adj[8] = [a rancid];
+@ bx.slap.adj[9] = [a scabies infested];
+@ bx.slap.adj[10] = [a lice infested];
+@ bx.slap.adj[11] = [a horny];
+@ bx.slap.adj[12] = [a dead];
+@ bx.slap.adj[13] = [a stiff];
+@ bx.slap.adj[14] = [a deep fried];
+@ bx.slap.adj[15] = [a smelly];
+@ bx.slap.adj[16] = [a bleeding];
+@ bx.slap.adj[17] = [a greasy];
+@ bx.slap.adj[18] = [a hot and bothered];
+@ bx.slap.adj[19] = [a rotting];
+@ bx.slap.adj[20] = [a petrified];
+@ bx.slap.adj[21] = [a rubber];
+@ bx.slap.adj[22] = [an AIDs infested];
+@ bx.slap.adj[23] = [a smoking];
+@ bx.slap.adj[24] = [a moldy];
+@ bx.slap.adj[25] = [a hairy];
+@ bx.slap.adj[26] = [a putrid];
+@ bx.slap.adj.num = 27;
+
+@ bx.slap.action[0] = [assrapes];
+@ bx.slap.action[1] = [abuses];
+@ bx.slap.action[2] = [cornholes];
+@ bx.slap.action[3] = [molests];
+@ bx.slap.action[4] = [kills];
+@ bx.slap.action[5] = [stabs];
+@ bx.slap.action[6] = [tortures];
+@ bx.slap.action[7] = [mutilates];
+@ bx.slap.action[8] = [brutalizes];
+@ bx.slap.action[9] = [forcefeeds];
+@ bx.slap.action[10] = [sexes up];
+@ bx.slap.action[11] = [chokes];
+@ bx.slap.action[12] = [wails on];
+@ bx.slap.action[13] = [destroys];
+@ bx.slap.action[14] = [bitchslaps];
+@ bx.slap.action[15] = [pimpslaps];
+@ bx.slap.action[16] = [beats the shit out of];
+@ bx.slap.action[17] = [thrashes];
+@ bx.slap.action[18] = [rapes];
+@ bx.slap.action[19] = [strangles];
+@ bx.slap.action.num = 20;
+
+@ bx.slap.thing[0] = [dildo];
+@ bx.slap.thing[1] = [elk];
+@ bx.slap.thing[2] = [imp carcass];
+@ bx.slap.thing[3] = [fetus];
+@ bx.slap.thing[4] = [severed penis];
+@ bx.slap.thing[5] = [monkey from zaire];
+@ bx.slap.thing[6] = [vibrator];
+@ bx.slap.thing[7] = [merlock];
+@ bx.slap.thing[8] = [tampon];
+@ bx.slap.thing[9] = [rooster];
+@ bx.slap.thing[10] = [severed leg];
+@ bx.slap.thing[11] = [leather whip];
+@ bx.slap.thing[12] = [horny dingo];
+@ bx.slap.thing[13] = [cat];
+@ bx.slap.thing[14] = [xoleras];
+@ bx.slap.thing[15] = [munchkin];
+@ bx.slap.thing[16] = [pile of shit];
+@ bx.slap.thing[17] = [psychic friends operator];
+@ bx.slap.thing[18] = [pair of testicles];
+@ bx.slap.thing[19] = [sewer rat];
+@ bx.slap.thing[20] = [chicken];
+@ bx.slap.thing[21] = [swordfish];
+@ bx.slap.thing[22] = [bamboo pole];
+@ bx.slap.thing[23] = [squirrel];
+@ bx.slap.thing[24] = [scrotum];
+@ bx.slap.thing[25] = [endangered animal];
+@ bx.slap.thing[26] = [baron];
+@ bx.slap.thing[27] = [cucumber];
+@ bx.slap.thing[28] = [whore];
+@ bx.slap.thing.num = 29;
+
+> Alias bxc.Slap
+{
+   if ([$0])
+      {
+      > Me $bx.slap.action[$rand($bx.slap.action.num)] $0 with $bx.slap.adj[$rand($bx.slap.adj.num)] $bx.slap.thing[$rand($bx.slap.thing.num)];
+      }
+   #else
+      {
+      bf.Echo.h Usage: /Slap <target>;
+      }
+}
+
+> Alias bxc.MassMsg
+{
+   @ atmp.mm.channel = ischannel($0) ? [$0] : C;
+   @ atmp.mm.msg = ischannel($0) ? [$1-] : [$*];
+   if ([$atmp.mm.msg]!=[])
+      {
+      if ([$chanusers($atmp.mm.channel)]!=[]&&[$chanusers($atmp.mm.channel)]!=[$N])
+	 {
+	 @ atmp.mm.nicks = [$sar(g/ /,/$remw($N $chanusers($atmp.mm.channel)))];
+	 > ^Msg $atmp.mm.nicks $atmp.mm.msg;
+	 bf.Show.SendMassMsg $atmp.mm.channel ${[$[1]atmp.mm.nicks]==[,]?[$mid(1 -1 $atmp.mm.nicks)]:[$atmp.mm.nicks]} $atmp.mm.msg;
+	 }
+      #else
+	 {
+	 bf.Echo.b MassMsg: No one to msg.;
+	 }
+      }
+   #else
+      {
+      bf.Echo.h Usage: /MassMsg [#chan] <msg>;
+      }
+}
+
+> Alias bxc.MassNotice
+{
+   @ atmp.mn.channel = ischannel($0) ? [$0] : C;
+   @ atmp.mn.msg = ischannel($0) ? [$1-] : [$*];
+   if ([$atmp.mn.msg]!=[])
+      {
+      if ([$chanusers($atmp.mn.channel)]!=[]&&[$chanusers($atmp.mn.channel)]!=[$N])
+	 {
+	 @ atmp.mn.nicks = [$sar(g/ /,/$remw($N $chanusers($atmp.mn.channel)))];
+	 > ^Notice $atmp.mn.nicks $atmp.mn.msg;
+	 bf.Show.SendMassNotice $atmp.mn.channel $atmp.mn.nicks $atmp.mn.msg;
+	 }
+      #else
+	 {
+	 bf.Echo.b MassNotice: No one to notice.;
+	 }
+      }
+   #else
+      {
+      bf.Echo.h Usage: /MassNotice [#chan] <msg>;
+      }
+}
+
+
+> Eval bf.Echo.b Loading Complete, Time: $tdiff(${time() - bx.Start.Load});
+

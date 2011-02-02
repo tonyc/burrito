@@ -1,0 +1,49 @@
+
+/*
+ * -------------
+ * -=> Finish Up
+ * -------------
+ */
+
+> Set Input_Prompt Loading - [....................] Finish Up;
+bc.SetLag;
+if (bg.NoSaveFile) {bf.Echo.b Save file [$bv.f.save] not found.};
+if ([$bv.u.AutoReplyPats]==[])
+   {
+   bc.SetAR d;
+   }
+#else
+   {
+   bf.Echo.b Auto Reply Patterns: [\[35m${bv.u.AutoReplyPats}\[m];
+   }
+if ([$bv.u.UserMode])
+   {
+   bc.UMode $bv.u.UserMode
+   }
+if (!bg.Loaded)
+   {
+   if (bv.t.Fwin)
+      {
+      > ^Window Name main Level all New ${bv.t.FwinTop?[Move 1 ]:[]}Grow $bv.u.FwinGrowNum;
+      @ bg.FirstWin = winnum();
+      }
+   #else
+      {
+      > ^Window Level dcc,all
+      }
+   bf.Echo.b \[32mLoading Complete!\[m Time: $tdiff(${time() - bg.StartLoad});
+   }
+#else
+   {
+   bf.Echo.b \[32mReLoading Complete!\[m Time: $tdiff(${time() - bg.StartLoad});
+   }
+@ bg.MyChannels = mychannels();
+@ bg.Loaded = 1;
+> Eval $srand($time());
+> Set Input_Prompt Loading - [        DONE        ];
+bf.SetStatusBar;
+bc.SetLag;
+bc.FixChans;
+#, Eval > Set Input_Prompt $bv.u.InputPrompt;
+
+

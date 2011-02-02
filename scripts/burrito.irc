@@ -1,0 +1,132 @@
+#                              Welcome to
+#       __________     ____________________.____________________
+#       \______   \__ _\______   \______   \__\__    ___/\   _  \
+#        |    |  _/  |  \       _/|       _/  | |    |   /  /_\  \
+#        |    |   \  |  /    |   \|    |   \  | |    |   \  \_/   \
+#        |______  /____/|____|_  /|____|_  /__| |____|    \_____  /
+#               \/             \/        \/                     \/
+#     -- Full featured irc scriptpak for use with ircII-EPIC3.000 --
+#
+# This is BuRRiTo version v0.50pre10 by TaCo!genesisk@eden.com, date: 3/24/96
+#
+# Please send all comments/suggestions/bug reports/etc to: genesisk@eden.com
+#
+# For new versions of BuRRiTo:
+#
+#   http://www.eden.com/~genesisk/irc/
+#
+# For new versions of ircII-EPIC:
+#
+#   ftp://ftp.neato.org/pub/irc/
+#
+
+#
+# BuRRiTo is split up into these sections (each in a separate file):
+#
+#  1: Global settings
+#  2: Client settings
+#  3: Key bindings
+#  4: ONs
+#  5: Aliases
+#  6: Commands
+#  7: Functions
+#  8: Finish up
+#
+
+#
+# Notes about the variable names: (many/all bv.* vars are saved with /Save)
+#
+#  bg.*   = global variable
+#  bx.*   = xternal script variable
+#  atmp.* = temporary variable
+#
+#  bv.x.*  = xternal script variable
+#  bv.f.*  = global file
+#  bv.t.*  = toggle
+#  bv.l.*  = sensor limit
+#  bv.m.*  = message
+#  bv.cs.* = color string
+#  bv.ms.* = message string
+#  bv.fs.* = format string
+#  bv.s.*  = sound
+#  bv.k.*  = key
+#  bv.u.*  = user setting
+#  bv.ul.* = user list (friend/shit/etc..)
+#  bv.cl.* = user completion list
+#
+
+#
+# Notes about the function names:
+#
+#  bf.*  = function
+#  bc.*  = command
+#  bxf.* = xternal function
+#  bxc.* = xternal command
+#
+
+# if the client doesn't support c like comments it's probably not epic
+# if you take out the Quit command here and try to load this on a non EPIC
+# client you will most likely get tons of errors, lots of wacky stuff and
+# ircII might even SegFault.. (when i tried loading it in ircII 2.8.2 it
+# Seg Faulted on me..)
+/*
+Eval ${K}${K}Echo WARNING: This client doesn't look like ircII-EPIC3, this script needs it to function properly
+Eval ${K}${K}Echo WARNING: Get it at: ftp://ftp.neato.org/pub/irc/
+Eval ${K}${K}Echo WARNING: Or at: http://www.eden.com/~genesisk/irc/
+Eval ${K}${K}Quit this irc client sucks...
+*/
+
+if ([$[12]J] != [2.8.2-EPIC3-])
+{
+Eval ${K}${K}Echo WARNING: You are using an old version of ircII-EPIC3, this script needs EPIC3.000 or better to function properly
+Eval ${K}${K}Echo WARNING: Get it at: ftp://ftp.neato.org/pub/irc/
+Eval ${K}${K}Echo WARNING: Or at: http://www.eden.com/~genesisk/irc/
+Eval ${K}${K}Quit this irc client sucks...
+}
+
+/* Make sure we are running a built in function and not just an alias */
+Eval $K${K}Alias > $$K$${K}$$*;
+
+alias , echo [, $*]
+
+> Set Display_Ansi On;
+> Alias bf.Echo.y > Xecho -Window main -Level crap $*[m;
+> Alias bf.Echo.b > Xecho -Window main -Level crap [[1\;33m*[m] $*[m;
+> Alias bf.Echo.s > Xecho -Window main -Level crap [[1\;33m-[m] $*[m;
+
+/* Logo orig by Waffles color added by TaCo */
+bf.Echo.y [m-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=* [1;33mWelcome To[m *=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-
+bf.Echo.y [m-=* [34m:::::::.  [1m ...    :::[0;36m:::::::..  [1;37m:::::::..   [0;36m:::[1;34m::::::::::::[0;34m   ...      [m*=-
+bf.Echo.y [m-=* [34m ;;;'';;' [1m ;;     ;;;[0;36m;;;;``;;;; [1;37m;;;;``;;;;  [0;36m;;;[1;34m;;;;;;;;''''[0;34m.;;;;;;;.   [m*=-
+bf.Echo.y [m-=* [34m [[[__[[\.[1m[['     [[[[0;36m [[[,/[[[' [1;37m [[[,/[[['  [0;36m[[[[1;34m     [[    [0;34m,[[     \[[, [m*=-
+bf.Echo.y [m-=* [34m $$""""Y$$[1m$$      $$$[0;36m $$$$$$c   [1;37m $$$$$$c    [0;36m$$$[1;34m     $$    [0;34m$$$,     $$$ [m*=-
+bf.Echo.y [m-=* [34m_88o,,od8P[1m88    .d888[0;36m 888b "88bo,[1;37m888b "88bo,[0;36m888[1;34m     88,   [0;34m"888,_ _,88P [m*=-
+bf.Echo.y [m-=* [34m""YUMMMP" [1m "YmmMMMM""[0;36m MMMM   "W"[1;37m MMMM   "W" [0;36mMMM[1;34m     MMM   [0;34m  "YMMMMMP"  [m*=-
+bf.Echo.y [m-=*=-=*=-=*=-=* [32mThis is BuRRiTo version v0.50pre10 by TaCo[m  =-=*=-=*=-=*=-=*=-
+
+#bf.Echo.s              This is BuRRiTo version v0.50pre10 by TaCo                     [[1;33m-[m];
+bf.Echo.s  For the latest version: http://www.eden.com/~genesisk/irc/           [[1;33m-[m];
+#bf.Echo.s  For help: /Help.  New users: /Help NewUser, /Help Bind, /Help Config [[1;33m-[m];
+bf.Echo.s  (NOTE: This is ALPHA! Very buggy, etc... don't expect much from it!) [[1;33m-[m];
+
+@ bv.f.ScriptDir = (BURRITO_DIR ? BURRITO_DIR : [$HOME/.burrito]) ## [/scripts];
+
+> Set Input_Prompt Loading - [..                  ] Global Settings;
+> Eval Load $bv.f.ScriptDir/b_gset.irc;
+> Set Input_Prompt Loading - [....                ] Client Settings;
+> Eval Load $bv.f.ScriptDir/b_cset.irc;
+> Set Input_Prompt Loading - [......              ] Key Bindings;
+> Eval Load $bv.f.ScriptDir/b_bind.irc;
+> Set Input_Prompt Loading - [........            ] ONs;
+> Eval Load $bv.f.ScriptDir/b_ons.irc;
+> Set Input_Prompt Loading - [..........          ] Aliases;
+> Eval Load $bv.f.ScriptDir/b_alis.irc;
+> Set Input_Prompt Loading - [............        ] Commands;
+> Eval Load $bv.f.ScriptDir/b_cmds.irc;
+> Set Input_Prompt Loading - [..............      ] Functions;
+> Eval Load $bv.f.ScriptDir/b_func.irc;
+> Set Input_Prompt Loading - [................    ] Finish Up;
+> Eval Load $bv.f.ScriptDir/b_fini.irc;
+
+> Eval > Set Input_Prompt $bv.u.InputPrompt;
+

@@ -1,0 +1,219 @@
+
+/*
+ * -----------
+ * -=> Aliases
+ * -----------
+ */
+
+
+/* User Commands */
+> Alias chops bc.Chops;
+> Alias autojoin bc.AutoJoin;
+> Alias ov bc.OV;
+> Alias status bc.Status;
+> Alias nets bc.NetScape;
+> Alias netscape bc.NetScape;
+> Alias netss bc.NetScapeStart;
+> Alias netscapestart bc.NetScapeStart;
+> Alias lynx bc.Lynx;
+> Alias xtra > Load $bv.f.Xtra;
+> Alias xtra2 > Load $bv.f.Xtra2;
+> Alias log bc.Log;
+> Alias abort bc.Abort;
+> Alias tog bc.Toggle;
+> Alias toggle bc.Toggle;
+> Alias stog bc.SToggle;
+> Alias stoggle bc.SToggle;
+> Alias togs bc.Toggles;
+> Alias toggles bc.Toggles;
+> Alias resetup bc.ReSetup;
+> Alias save bc.Save;
+> Alias loadsave > Eval Load $bv.f.Save;
+> Alias cycle bc.Cycle;
+> Alias play bc.Play;
+> Alias rlag bc.RLag;
+> Alias setlag bc.SetLag;
+> Alias winshow bc.WinShow;
+> Alias ctcp bc.CtCp;
+> Alias repeat bc.Repeat;
+> Alias who > Who;
+> Alias wl bc.WhoLong;
+> Alias w bc.Who;
+> Alias ver bc.Ver;
+> Alias fing bc.Finger;
+> Alias ping bc.Ping;
+> Alias zping bc.ZPing;
+> Alias net bc.Net;
+> Alias setar bc.SetAR;
+> Alias hold bc.Hold;
+> Alias cls bc.Cls;
+> Alias exit bc.Quit;
+> Alias signoff bc.Quit;
+> Alias quit bc.Quit;
+> Alias bye bc.Bye;
+> Alias ll > Lastlog;
+> Alias llpub bc.Llpub;
+> Alias llar bc.Llar;
+> Alias llhi bc.Llhi;
+> Alias llmsg bc.LlMsg;
+> Alias dmsg > Msg =$*;
+> Alias dque > Query =$*;
+> Alias win > Window;
+> Alias wg > Window Grow;
+> Alias ws > Window Shrink;
+> Alias links bc.Links;
+> Alias scan bc.Scan;
+> Alias sc bc.Scan;
+> Alias sb bc.Sb;
+> Alias umode bc.Umode;
+> Alias ww > Whowas;
+> Alias re > Redirect;
+> Alias ex > Exec;
+> Alias m > Msg;
+> Alias n > Notice;
+> Alias invite bc.Invite;
+> Alias que Query;
+> Alias join bc.Join Normal;
+> Alias j Join;
+> Alias part bc.Leave;
+> Alias leave bc.Leave;
+> Alias l Leave;
+> Alias jw bc.Join Window;
+> Alias wink bc.Wink
+> Alias wi > WhoIs;
+> Alias wii bc.WhoIs;
+> Alias ww > WhoWas;
+> Alias version bc.Version;
+> Alias gone bc.Gone;
+> Alias vgone bc.VGone;
+> Alias qgone bc.QGone;
+> Alias back bc.Back;
+> Alias vback bc.VBack;
+> Alias qback bc.QBack;
+> Alias mme bc.Mme;
+> Alias nickc bc.Cnick;
+> Alias nicki bc.Inick;
+> Alias nickb bc.Bnick;
+> Alias nickd bc.Dnick;
+> Alias nickr bc.Rnick;
+> Alias ni bf.Nick;
+> Alias nick bf.Nick;
+> Alias help bc.Help;
+> Alias fixchans bc.FixChans;
+> Alias ls > Exec ls -FoCs
+> Alias ig bc.Ignore;
+> Alias noig bc.UnIgnore;
+> Alias chanst bc.ChanSt;
+> Alias chat bc.Chat;
+> Alias nochat bc.NoChat;
+> Alias xdcc bc.ZDcc;
+> Alias zdcc bc.ZDcc;
+> Alias get bc.Get;
+> Alias cdcc > Dcc close send $*;
+
+/* Config Commands */
+> Alias edcs bc.EdCs;
+> Alias chngstr bc.ChngStr;
+
+/* Oper Commands */
+> Alias rban bc.RBan;
+> Alias unban bc.UnBan;
+#, Alias bankickignore bc.BanKickIgnore;
+#, Alias bki bc.BanKickIgnore;
+> Alias bankick bc.BanKick;
+> Alias bk bc.BanKick;
+> Alias ban bc.Ban;
+> Alias mass bc.Mass;
+> Alias V bc.Voice;
+> Alias Q bc.Quiet;
+> Alias dop bc.Dop;
+> Alias op bc.Op;
+> Alias topic bc.Topic;
+> Alias t Topic;
+> Alias punctk bc.PunctKick;
+> Alias capsk bc.CapsKick;
+> Alias k bc.Kick;
+> Alias c bc.Mode;
+> Alias rkey bc.Rkey;
+> Alias wall bc.Wall;
+> Alias fk bc.FK;
+> Alias fbk bc.FBK;
+> Alias tban bc.TBan;
+> Alias co bc.Co;
+> Alias cc bc.Cc;
+
+> Alias bword bc.BWord;
+> Alias rbword bc.RBWord;
+
+/* List Commands */
+> Alias fedit bc.FEdit;
+> Alias friendlist bc.FriendList;
+> Alias shitlist bc.ShitList;
+> Alias flist bc.FriendList;
+> Alias slist bc.ShitList;
+> Alias shit bc.Shit;
+> Alias friend bc.Friend;
+> Alias fri bc.Friend;
+> Alias rshit bc.RShit;
+> Alias rfriend bc.RFriend;
+> Alias rfri bc.RFriend;
+
+
+/* Redirect Commands */
+> Alias rlm bc.Rlm;
+> Alias rln bc.Rln;
+> Alias rlw bc.Rlw;
+> Alias rlc bc.Rlc;
+> Alias rlg bc.Rlg;
+> Alias rlp bc.Rlp;
+> Alias rle bc.Rle;
+> Alias rlov bc.Rlov;
+> Alias klm bc.Klm;
+> Alias kln bc.Kln;
+> Alias klw bc.Klw;
+> Alias klc bc.Klc;
+> Alias klg bc.Klg;
+> Alias klp bc.Klp;
+> Alias kle bc.Kle;
+> Alias klov bc.Klov;
+> Alias tlm bc.Tlm;
+> Alias tln bc.Tln;
+> Alias tlw bc.Tlw;
+> Alias tlc bc.Tlc;
+> Alias tlg bc.Tlg;
+> Alias tlp bc.Tlp;
+> Alias tle bc.Tle;
+> Alias tlov bc.Tlov;
+> Alias wlm bc.Wlm;
+> Alias wln bc.Wln;
+> Alias wlc bc.Wlc;
+> Alias wlg bc.Wlg;
+> Alias wlp bc.Wlp;
+> Alias wle bc.Wle;
+> Alias wlov bc.Wlov;
+
+/* Xtra's Commands */
+> Alias blist bc.Xtra BotList;
+> Alias botlist bc.Xtra BotList;
+> Alias bot bc.Xtra Bot;
+> Alias rbot bc.Xtra RBot;
+> Alias botop bc.Xtra BotOp;
+> Alias fsay bc.Xtra FSay;
+> Alias fmsg bc.Xtra FMsg;
+> Alias font bc.Xtra Font;
+> Alias fonts bc.Xtra Fonts;
+> Alias whereis bc.Xtra WhereIs;
+
+/* Xtra2's Commands */
+> Alias zt bc.Xtra2 ZippyTopic;
+> Alias zk bc.Xtra2 ZippyKick;
+> Alias zip bc.Xtra2 Zippy;
+> Alias zippy bc.Xtra2 Zippy;
+> Alias zippymsg bc.Xtra2 ZippyMsg;
+> Alias zipmsg bc.Xtra2 ZippyMsg;
+> Alias zipcmd bc.Xtra2 ZippyCmd;
+> Alias ck bc.Xtra2 ConfuseKick;
+> Alias slap bc.Xtra2 Slap;
+> Alias massnotice bc.Xtra2 MassNotice;
+> Alias massmsg bc.Xtra2 MassMsg;
+

@@ -1,0 +1,319 @@
+
+/*
+ * -------
+ * -=> ONs
+ * -------
+ */
+
+/* parse ONs
+   --------- */
+> On    ^Channel_Nick "*" bf.Parse.ChannelNick ${bv.t.ShowChan?1:[${!bv.t.Fwin&&[$0]!=[$C]?1:0}]} $1 $userhost() $0 $2-;
+> On ^Channel_Signoff "*" bf.Parse.ChannelSignoff ${bv.t.ShowChan?1:[${!bv.t.Fwin&&[$0]!=[$C]?1:0}]} $1 $userhost() $0 $2-;
+> On            ^Ctcp "*" bf.Parse.Ctcp $0 $userhost() $1-;
+> On      ^Ctcp_Reply "*" bf.Parse.CtcpReply $0 $userhost() $1-;
+> On        ^Dcc_Chat "*" bf.Parse.DccChat $0 ${[$(bg.DccChatUH.$encode($0))]?[$(bg.DccChatUH.$encode($0))]:[<Unknown>@<Unknown>]} $1-;
+> On     -Dcc_Request "*" bf.Parse.DccRequest $0 $userhost() $1-;
+> On     -Dcc_Connect "*" bf.Parse.DccConnect $*;
+> On        -Dcc_Lost "*" bf.Parse.DccLost $*;
+> On          ^Invite "*" bf.Parse.Invite $0 $2 $1;
+> On            ^Join "*" bf.Parse.Join $0 $2 $1;
+> On            ^Kick "*" bf.Parse.Kick $1 $userhost() $0 $2-;
+> On           ^Leave "*" bf.Parse.Leave $0 $userhost() $1-;
+> On            ^Mode "*" bf.Parse.Mode ${bv.t.ShowChan?1:[${!bv.t.Fwin&&[$1]!=[$C]?1:0}]} $0 ${[$1]!=[$N]&&!match(*.* $0)?[$userhost()]:[none]} $1-;
+> On   ^Mode_Stripped "*" bf.Parse.ModeStripped $0 $userhost() $1-;
+> On             ^Msg "*" bf.Parse.Msg $0 $userhost() $1-;
+> On       ^Msg_Group "*" bf.Parse.MsgGroup $0 $userhost() $1-;
+> On        ^Nickname "*" bf.Parse.Nickname $0 $userhost() $1-;
+> On          ^Notice "*" bf.Parse.Notice $0 $userhost() $1-;
+> On  ^Notify_Signoff "*" bf.Parse.NotifySignoff $*;
+> On   ^Notify_Signon "*" bf.Parse.NotifySignon $*;
+> On          ^Action "*" bf.Parse.Public Action 0 ${bv.t.ShowChan||[$1]==[$N]?1:[${(!bv.t.Fwin&&[$1]!=[$C])?1:0}]} $0 $userhost() $1-;
+> On          ^Public "*" bf.Parse.Public Public 0 $bv.t.ShowChan $0 $userhost() $1-;
+> On      ^Public_Msg "*" bf.Parse.Public Public msg $bv.t.ShowChan $0 $userhost() $1-;
+> On    ^Public_Other "*" bf.Parse.Public Public 0 1 $0 $userhost() $1-;
+> On   ^Public_Notice "*" bf.Parse.Public Public notice $bv.t.ShowChan $0 $userhost() $1-;
+> On     ^Send_Action "*" bf.Parse.SendAction $*;
+> On   ^Send_Dcc_Chat "*" bf.Parse.SendDccChat $*;
+> On        ^Send_Msg "*" bf.Parse.SendMsg $*;
+> On     ^Send_Notice "*" bf.Parse.SendNotice $*;
+> On     ^Send_Public "*" bf.Parse.SendPublic $*;
+#, On      ^Send_Talk "*" bf.Parse.SendTalk $*;
+#, On        ^Signoff "*" bf.Parse.Signoff $*;
+#, On           ^Talk "*" bf.Parse.Talk $*;
+> On           ^Topic "*" bf.Parse.Topic $0 $userhost() $1-;
+#, On           ^Wall "*" bf.Parse.Wall $*;
+> On          ^Wallop "*" bf.Parse.WallOp $*;
+> On             ^Who "*" bf.Parse.Who $*;
+
+> On     ^Window_Kill "*" bf.Parse.WindowKill $*;
+
+
+/* hmm.. */
+#, On ^Window "% Unmatched % !" bf.Echo.d $*
+#, On ^Window "% Unmatched %" bf.Echo.d $*
+
+/* [todo: ...] */
+> On ^Idle "*"
+{
+   if (!A && bv.t.AutoGone && [$0]>=[$bv.l.AutoGone])
+      {
+      bf.Gone $bv.t.SendAwayMsgs $bv.m.GoneIdle;
+      @ bg.GoneMsg = bv.m.GoneIdle;
+      bf.Echo.b You\'ve been automagically set away \(idle $0 minutes\) pub away msgs are $bf.ShowSet($bv.t.SendAwayMsgs);
+      }
+   #else
+      {
+      if ([$A]!=[])
+	 {
+	 bf.Gone 0 $bg.GoneMsg;
+	 }
+      }
+   bc.SetLag;
+}
+
+#> On ^Timer "*:?0*" . Eval $srand($time());
+
+> On #^Disconnect -1 "*"
+{
+   @ bg.TestingLag = 0;
+   @ bg.Lag = 0;
+#   @ bg.Disconnected = 1;
+   @ bg.BotScanning = 0;
+   @ bg.JoinStack = [];
+   bf.Echo.d DisCon: [$*];
+#   > ^Window show main;
+}
+
+> On ^Connect "*"
+{
+   if ([$bv.u.UserMode])
+      {
+      bc.UMode $bv.u.UserMode;
+      }
+
+   @ bg.StatusChannels = [];
+   bf.Echo.b Connected to $0\ port $1;
+   bc.RLag;
+   if (bv.t.AutoJoin) {bc.AutoJoin}
+}
+
+/* based on OPERvision by WinterHawk */
+> On ^Server_Notice "% % Notice -- Hack: *" bf.Show.OVhack $*;
+> On ^Server_Notice "% % Notice -- Fake: *" bf.Show.OVfake $5-;
+> On ^Server_Notice "% % Notice -- Received Kill *"
+{
+   if (index(. $10)>=0)
+      {
+      bf.Show.OVkill $strip(. $8) $10 $13-;
+      }
+   #else
+      {
+      bf.Show.OVoperkill $strip(. $8) $10 $13-;
+      }
+}
+> On ^Server_Notice "% % Notice -- Received Unauthorized *" bf.Show.OVunauth $*;
+> On ^Server_Notice "% % Notice -- All Connections *" bf.Show.OVfull $*;
+> On ^Server_Notice "% % Notice -- Too Many Connections *" bf.Show.OVfull $*;
+> On ^Server_Notice "% % Notice -- Nick Collision *" bf.Show.OVnickkill $4-;
+> On ^Server_Notice "% % Notice -- Message *" bf.Show.OVmsg $*;
+> On ^Server_Notice "% % Notice -- Invalid Username: *" bf.Show.OVbadusername $4-;
+> On ^Server_Notice "% % Notice -- Client*" bf.Show.OVclient $4-;
+> On ^Server_Notice "% % Notice -- Bogus*" bf.Show.OVbogus $*;
+> On ^Server_Notice "% % Notice -- *" bf.Show.OVmisc $*;
+
+
+/* server numerics
+   --------------- */
+> On ^001 "*" bf.Echo.s $bf.Center(75 $1-);
+> On ^002 "*" #;
+> On ^003 "*" #;
+> On ^004 "*" bf.Echo.s $bf.Center(75 $1-);
+> On ^221 "*" bf.Show.UModeIs $1-;
+> On ^250 "*" bf.Echo.s $bf.Center(75 Highest connection count: $4 $5-);
+> On ^251 "*" bf.Echo.s $bf.Center(75 ${[$3] + [$6]} total users connected \($3 + $6 invisible\) on $10 servers.);
+> On ^252 "*" bf.Echo.s $bf.Center(75 There are $1 IRCops connected.);
+> On ^253 "*" bf.Echo.s $bf.Center(75 $1 unknown connections);
+> On ^254 "*" bf.Echo.s $bf.Center(75 $1 known channels created.);
+> On ^255 "*" bf.Echo.s $bf.Center(75 This server has $3 users & $6 servers);
+
+> On ^250 "*" bf.Echo.s $bf.Center(75 $1-);
+> On ^251 "*" bf.Echo.s $bf.Center(75 $1-);
+> On ^252 "*" bf.Echo.s $bf.Center(75 $1-);
+> On ^253 "*" bf.Echo.s $bf.Center(75 $1-);
+> On ^254 "*" bf.Echo.s $bf.Center(75 $1-);
+> On ^255 "*" bf.Echo.s $bf.Center(75 $1-);
+
+> On ^301 "*" bf.Show.SetAway $bf.CleanAnsi($1-);
+> On ^305 "*"
+{
+   if (bg.GoneStartTime > 0)
+      {
+      bf.Echo.b You\'re no longer marked as Away, you were gone for: $tdiff(${time() - bg.GoneStartTime});
+      }
+   #else
+      {
+      bf.Echo.b You are no longer marked as Away.;
+      }
+   @ bg.GoneStartTime = 0;
+   @ bg.GoneMsg = [];
+}
+/* you have been marked as being away */
+> On ^306 "*" #;
+
+
+/* who is/was beautifier, based on ideas in LiCe/PhoEniX
+   ----------------------------------------------------- */
+> On ^311 "*"
+{
+   @ atmp.whois.str = [$1!$bf.CleanShow($2@$3) \($bf.Clean($5-)\)];
+   if (@atmp.whois.str < 76)
+      {
+      bf.Show.WhoIsShort $1 $bf.CleanShow($2@$3) $bf.CleanAnsi($5-);
+      }
+   #else
+      {
+      bf.Show.WhoIsLong1 $1 $bf.CleanShow($2@$3);
+      bf.Show.WhoIsLong2 $bf.CleanAnsi($5-);
+      }
+   if (isdigit($right(1 $3)) && bv.t.WInslookup)
+      {
+      @ atmp.whois.wiaddr = iptoname($3);
+      if ([$atmp.whois.wiaddr]==[])
+	 {
+	 bf.Show.WhoIsAddr <could not find address for IP>;
+	 }
+      #else
+	 {
+	 bf.Show.WhoIsAddr $atmp.whois.wiaddr;
+	 }
+      }
+
+/* [todo: ...] */
+/*    @ atmp.whois.shit ; */
+   if (atmp.whois.shit = bf.IsShitLevel(? $1!$2@$3))
+      {
+      bf.Show.WhoIsShit $bf.CleanShow($bf.Word($atmp.whois.shit $bv.ul.Shit.Hosts)) $bf.CleanShow($bf.Word($atmp.whois.shit $bv.ul.Shit.Chans)) $bf.Word($atmp.whois.shit $bv.ul.Shit.Levels) $(bv.ul.Shit.Reason.$atmp.whois.shit);
+      }
+/*    @ atmp.whois.friend = bf.IsUserLevel(? $1!$2@$3); */
+   if (atmp.whois.friend = bf.IsUserLevel(? $1!$2@$3))
+      {
+      bf.Show.WhoIsFriend $bf.CleanShow($bf.Word($atmp.whois.friend $bv.ul.Friend.Hosts)) $bf.CleanShow($bf.Word($atmp.whois.friend $bv.ul.Friend.Chans)) $bf.Word($atmp.whois.friend $bv.ul.Friend.Levels);
+      }
+   bf.Purge atmp.whois;
+}
+/* > On ^312 "*" bf.Show.WhoIsServer $1 ${match(${bg.Brak1}*.*${bg.Brak2} $2)?[UpLink$bg.Colon $strip(${bg.Brak1}${bg.Brak2} $2)]:[$2-]} */
+> On ^312 "*" bf.Show.WhoIsServer $1 ${match(${bg.Brak1}*.*${bg.Brak2} $2)?[$3-]:[$2-]}
+> On ^313 "*" bf.Show.WhoIsIrcop $1-;
+/* whowas */
+> On ^314 "*"
+{
+   @ atmp.whowas.str = [$1!$bf.CleanShow($2@$3) \($bf.CleanAnsi($5-)\)];
+   if (@atmp.whowas.str < 75)
+      {
+      bf.Show.WhoWasShort $1 $bf.CleanShow($2@$3) $bf.CleanAnsi($5-);
+      }
+   #else
+      {
+      bf.Show.WhoWasLong1 $1 $bf.CleanShow($2@$3);
+      bf.Show.WhoWasLong2 $bf.CleanAnsi($5-);
+      }
+   if (isdigit($right(1 $3)) && bv.t.WInslookup)
+      {
+      @ atmp.whowas.wiaddr = iptoname($3);
+      if ([$atmp.whowas.wiaddr]==[])
+	 {
+	 bf.Show.WhoIsAddr <could not find address for IP>;
+	 }
+      #else
+	 {
+	 bf.Show.WhoIsAddr $atmp.whowas.wiaddr;
+	 }
+      }
+   bf.Purge atmp.whowas;
+}
+/* idle and signon time */
+> On ^317 "*"
+{
+   if (isdigit($3))
+      {
+      @ atmp.timeidle.str = [$strip( $bv.cs.WhoIsIdle $tdiff($2) $bv.cs.whois_time $tdiff(${time()-[$3]}))];
+      if (@atmp.timeidle.str < 78)
+	 {
+	 bf.Echo.y $bf.GetTime(Crap _)$bv.cs.WhoIsIdle $tdiff($2) $bv.cs.WhoIsSignOn $stime($3);
+	 }
+      #else
+	 {
+	 bf.Echo.y $bf.GetTime(Crap _)$bv.cs.WhoIsIdle $bf.tdiff($2) $bv.cs.WhoIsSignOn $stime($3);
+	 }
+      }
+   #else
+      {
+      bf.Echo.y $bf.GetTime(Crap _)$bv.cs.WhoIsIdle $tdiff($2);
+      }
+/* [todo: ...] */
+   @ atmp.timeidle.shit = bf.IsShitLevel(? $1!$2@$3);
+   if (atmp.timeidle.shit)
+      {
+      bf.Show.WhoIsShit $bf.CleanShow($bf.Word($atmp.timeidle.shit $bv.ul.Shit.Hosts)) $bf.CleanShow($bf.Word($atmp.timeidle.shit $bv.ul.Shit.Chans)) $bf.Word($atmp.timeidle.shit $bv.ul.Shit.Levels) $(bv.ul.Shit.Reason.$atmp.timeidle.shit);
+      }
+   @ atmp.timeidle.friend = bf.IsUserLevel(? $1!$2@$3);
+   if (atmp.timeidle.friend)
+      {
+      bf.Show.WhoIsFriend $bf.CleanShow($bf.Word($atmp.timeidle.friend $bv.ul.Friend.Hosts)) $bf.CleanShow($bf.Word($atmp.timeidle.friend $bv.ul.Friend.Chans)) $bf.Word($atmp.timeidle.friend $bv.ul.Friend.Levels);
+      }
+   bf.Purge atmp.timeidle;
+}
+/* whois channels */
+> On ^319 "*" bf.Show.WhoIsChan $bf.CleanShow($1-);
+/* end of whois beautifier */
+
+/* end of /WHO */
+> On ^315 "*" @ bv.t.WhoLong = 0;
+/* end of /WHOIS */
+> On ^318 "*" #;
+/* end of /LIST */
+> On ^323 "*" #;
+> On ^324 "*" bf.Show.ModeIs $1-;
+> On ^329 "*" bf.Echo.b Channel $1 Created @ $bf.GetDate($2) - $3-;
+> On ^331 "*" bf.Show.TopicNone $1-;
+> On ^332 "*" bf.Show.Topic $1-;bf.GetUrl $1-;
+> On ^333 "*" bf.Show.TopicSetBy $1-2 ${[$3]?[at $bf.GetDate($3) \($tdiff(${time() - [$3]}) ago\)]:[]}
+> On ^353 "*" bf.Show.Names ${[$1]==[=]?[Pub]:[Sec]} $bf.CleanShow($2) $3-;
+> On ^364 "*"
+{
+   bf.Show.Link $atmp.link.count $3 $bf.StripUndernet($1) $bf.StripUndernet($2);
+   @ atmp.link.count += 1;
+}
+> On ^365 "*" @ atmp.link.count = [];
+/* end of /NAMES */
+> On ^366 "*" #
+> On ^367 "*"
+{
+   @ bg.BanNum++;
+   if ([$4])
+      {
+      bf.Show.BanDate $bg.BanNum $bf.CleanShow($1-2) $3 @ $bf.GetDate($4);
+      }
+   #else
+      {
+      bf.Show.Ban $bg.BanNum $bf.CleanShow($1-);
+      }
+}
+> On ^368 "*" bf.Show.BanNum $bf.CleanShow($2) $1;@ bg.BanNum = 0;
+/* end of /WHOWAS */
+> On ^369 "*" #;
+> On ^372 "*" bf.Echo.s $2-;
+> On ^375 "*" bf.Echo.s $2-;
+/* end of /MOTD */
+> On ^376 "*" #;
+> On ^404 "*" bf.Parse.CantSend $*;
+> On ^442 "*" bf.Parse.NotOnChan $*;
+> On ^473 "*" bf.Parse.InviteOnly $*;
+> On ^474 "*" bf.Parse.Banned $*;
+> On ^475 "*" bf.Parse.BadChanKey $*;
+> On ^482 "*" bf.Parse.NotChanOp $*;
+
+> On ^Server_notice "%.%.% ??? Highest connection count:*" bf.Echo.s $bf.Center(75 Highest connection count: $5 $6-);
+
+> On ^Server_notice "%.%.% ??? Your host is*" #;
+

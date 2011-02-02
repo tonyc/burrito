@@ -1,0 +1,352 @@
+/*
+ *    ___        _   ___  __       __         __  __
+ *   / __\ /\  /(_) / _ \/ _\  _  / _\ __ _  / / / _\ __ _
+ *  / /   / /_/ / |/ /_)/\ \ _| |_\ \ / _` |/ /  \ \ / _` |
+ * / /___/ __  /| / ___/ _\ \_   _|\ \ (_| / /____\ \ (_| |
+ * \____/\/ /_/ |_\/     \__/ |_| \__/\__,_\____/\__/\__,_|
+ *
+ * Extra's script by TaCo for BuRRiTo
+ * This is CHiPS+SaLSa v0.3
+ */
+
+@ bx.XtraVersion = [CHiPS+SaLSa v0.3];
+@ bg.VersionReply = [$bg.VersionReply + $bx.XtraVersion];
+> Eval > ^Set Client_Information [running: $bg.VersionReply];
+@ bx.start.load = time();
+> Eval bf.Echo.b Loading the Xtra script $bx.XtraVersion\...;
+
+/* Figlet commands by TaCo - uses ideas from CheezWiz by Waffles */
+> Alias bxc.FSay
+{
+   @ atmp.fsay.chan = ischannel($0) ? [$0] : C;
+   @ atmp.fsay.text = ischannel($0) ? [$1-] : [$*];
+   if ([$atmp.fsay.text])
+      {
+      > Exec -Msg $atmp.fsay.chan echo "$atmp.fsay.text" | $bv.f.Figlet -f $bv.f.FontDir/$bv.u.Font;
+      }
+   #else
+      {
+      bf.Echo.h Usage: /FSay [#chan] <text>;
+      }
+   bf.Purge atmp.fsay;
+}
+
+> Alias bxc.FMsg
+{
+   if ([$1])
+      {
+      > Exec -Msg $0 echo "$1-" | $bv.f.Figlet -f $bv.f.FontDir/$bv.u.Font;
+      }
+   #else
+      {
+      bf.Echo.h Usage: /FMsg <nick> <text>;
+      }
+}
+
+> Alias bxc.Font
+{
+   if ([$0])
+      {
+      @ atmp.ft.font = [$0];
+      > ^On ^Exec_Error "FigletFontChange *"
+	 {
+	 bf.Echo.b Figlet Font not found [$atmp.ft.font];
+	 bf.Echo.b Figlet Font still: [$bv.u.Font];
+	 > ^Assign -atmp.ft.font;
+	 }
+      > ^On ^Exec "FigletFontChange *"
+	 {
+	 @ bv.u.Font = atmp.ft.font;
+	 bf.Echo.b Figlet Font changed to: [$bv.u.Font];
+	 > ^Assign -atmp.ft.font;
+	 }
+      > Exec -Name FigletFontChange ls $bv.f.FontDir/$sar(/.flf//$atmp.ft.font).flf;
+      }
+   #else
+      {
+      bf.Echo.h Usage: /Font <font>.  Current font: [$bv.u.Font];
+      bf.Echo.h Use /Fonts to see a list of available fonts.;
+      }
+}
+
+> Alias bxc.Fonts
+{
+   bf.Echo.b Fonts in $bv.f.FontDir:;
+   > Exec ls -FoC $bv.f.FontDir;
+}
+
+
+/* Bot auth commands by TaCo
+ * -------------------------
+ */
+> Alias bxc.BotList
+{
+   if ([$bv.ul.Bot.Hosts])
+      {
+      bf.Echo.b Bot List:
+      $K${K}Fe ($jot(1 $#bv.ul.Bot.Hosts)) atmp.bl.x
+	 {
+	 bf.Show.BotList $atmp.bl.x $bf.CleanShow($bf.Word($atmp.bl.x $bv.ul.Bot.Hosts) $bf.Word($atmp.bl.x $bv.ul.Bot.Chans)) $bf.Word($atmp.bl.x $bv.ul.Bot.PassWds) $(bv.ul.Bot.UserInfo.$atmp.bl.x);
+	 }
+      }
+   #else
+      {
+      bf.Echo.b No bot list.;
+      }
+}
+
+> Alias bxc.Bot
+{
+   if ([$1])
+      {
+      if (index(*!.@?% $0)>=0)
+	 {
+	 @ atmp.bt.pat = [$0];
+	 }
+      #else
+	 {
+	 @ atmp.bt.type = [$[1]3]==[!]&&[$3]!=[!] ? [$3] : [UHI];
+	 @ atmp.bt.pat = [];
+	 > UserHost $0 -Cmd
+	    {
+	    if ([$4]!=[<UNKNOWN>])
+	       {
+	       @ atmp.bt.pat = bf.UserPattern($0 $3 $4 $atmp.bt.type);
+	       }
+	    }
+	 }
+      @ atmp.bt.passwd = [$1];
+      @ atmp.bt.chans = [$2] ? [$2] : [*];
+      @ atmp.bt.userinfo = [$[1]3]==[!]&&[$3]!=[!] ? [$4-] : [$3-];
+
+      > Wait -Cmd if ([$atmp.bt.pat])
+	 {
+	 bxc.Bot.Add $atmp.bt.pat $atmp.bt.passwd $atmp.bt.chans $atmp.bt.userinfo;
+	 bf.Purge atmp.bt;
+	 }
+      #else
+	 {
+	 bf.Echo.b Bot: could not find nick: $0;
+	 bf.Purge atmp.bt;
+	 }
+      }
+   #else
+      {
+      bxc.Bot.Help;
+      }
+}
+
+> Alias bxc.Bot.Add
+{
+   @ atmp.bt.match = rmatch($0 $bv.ul.Bot.Hosts);
+   if (atmp.bt.match)
+      {
+      bf.Echo.b Bot: $0 already in bot list, changing settings...;
+      bf.Show.BotPrevious $bf.CleanShow($bf.Word($atmp.bt.match $bv.ul.Bot.Hosts) $bf.Word($atmp.bt.match $bv.ul.Bot.PassWds) $bf.Word($atmp.bt.match $bv.ul.Bot.Chans)) $(bv.ul.Bot.UserInfo.$atmp.bt.match);
+      bf.Show.BotChange $bf.CleanShow($0) $1 $bf.CleanShow($2) $bf.CleanAnsi($3-);
+
+      /* sigh, working around a bug in $chngw(0)... */
+      if (#bv.ul.Bot.Hosts>1)
+	 {
+	 if (atmp.bt.match>1)
+	    {
+	    @ bv.ul.Bot.Hosts = chngw(${atmp.bt.match - 1} $0 $bv.ul.Bot.Hosts);
+	    @ bv.ul.Bot.PassWds = chngw(${atmp.bt.match - 1} $1 $bv.ul.Bot.PassWds);
+	    @ bv.ul.Bot.Chans = chngw(${atmp.bt.match - 1} $2 $bv.ul.Bot.Chans);
+	    @ bv.ul.Bot.UserInfo.$atmp.bt.match = [$3-];
+	    }
+	 #else
+	    {
+	    @ bv.ul.Bot.Hosts = [$0 $restw(1 $bv.ul.Bot.Hosts)];
+	    @ bv.ul.Bot.PassWds = [$1 $restw(1 $bv.ul.Bot.PassWds)];
+	    @ bv.ul.Bot.Chans = [$2 $restw(1 $bv.ul.Bot.Chans)];
+	    @ bv.ul.Bot.UserInfo.1 = [$3-];
+	    }
+	 }
+      #else
+	 {
+	 @ bv.ul.Bot.Hosts = [$0];
+	 @ bv.ul.Bot.PassWds = [$1];
+	 @ bv.ul.Bot.Chans = [$2];
+	 @ bv.ul.Bot.UserInfo.1 = [$3-];
+	 }
+      }
+   #else
+      {
+      bf.Show.BotAdd $bf.CleanShow($0) $1 $bf.CleanShow($2) $bf.CleanAnsi($3-);
+      : $push(bv.ul.Bot.Hosts $0);
+      : $push(bv.ul.Bot.PassWds $1);
+      : $push(bv.ul.Bot.Chans $2);
+      @ bv.ul.Bot.UserInfo.$#bv.ul.Bot.Hosts = [$3-];
+      }
+}
+
+> Alias bxc.Bot.Help
+{
+   bf.Echo.h Usage: /Bot <nick|pat> <passwd> [[!]#chan[:[!]#chan[...]] [!pattype] [userinfo]];
+   bf.Echo.h The channel may contain wildcards and the default chan is *;
+   bf.Echo.h Pat type is the type of pattern to make based on nick, default is UHI;
+   bf.Echo.h Patterns: N: nick, U: username, H: host, D: domain, S: site, C: country;
+   bf.Echo.h I: no identd, you may mix pattern types, but only one of HDSC will be proccessed;
+   bf.Echo.h UserInfo is used to distinguish bots from real people.;
+}
+
+> Alias bxc.RBot
+{
+   if ([$0])
+      {
+      if ([$0]==[-])
+	 {
+	 bf.Echo.b Deleting bot list...;
+	 bf.Purge bv.ul.Bot;
+	 }
+      #else
+	 {
+	 if (index(*!.@?% $0)>=0)
+	    {
+	    @ atmp.rb.pat = [$0];
+	    }
+	 #else
+	    {
+	    @ atmp.rb.type = [$3] ? toupper($3) : [UHI];
+	    @ atmp.rb.pat = [];
+	    > UserHost $0 -Cmd
+	       {
+	       if ([$4]!=[<UNKNOWN>])
+		  {
+		  @ atmp.rb.pat = bf.UserPattern($0 $3 $4 $atmp.rb.type);
+		  }
+	       }
+	    }
+
+	 > Wait -Cmd if ([$atmp.rb.pat])
+	    {
+	    bxc.Bot.Delete $atmp.rb.pat;
+	    bf.Purge atmp.rb;
+	    }
+	 #else
+	    {
+	    bf.Echo.b RBot: could not find any of these nick: $0;
+	    bf.Purge atmp.rb;
+	    }
+	 }
+      }
+   #else
+      {
+      bf.Echo.h Usage: /RBot <nick [pattype]|pattern|->;
+      bf.Echo.h use - to delete the bot list.;
+      }
+}
+
+> Alias bxc.Bot.Delete
+{
+   @ atmp.rb.match = rmatch($0 $bv.ul.Bot.Hosts);
+   if (atmp.rb.match)
+      {
+      bf.Echo.b RBot: Removing $0 from bot list...;
+      @ bv.ul.Bot.Hosts = notw(${atmp.rb.match - 1} $bv.ul.Bot.Hosts);
+      @ bv.ul.Bot.PassWds = notw(${atmp.rb.match - 1} $bv.ul.Bot.PassWds);
+      @ bv.ul.Bot.Chans = notw(${atmp.rb.match - 1} $bv.ul.Bot.Chans);
+#      @ bv.ul.Bot.UserInfo.$atmp.rb.match = [];
+      }
+   #else
+      {
+      bf.Echo.b RBot: $0 not found in bot list.;
+      }
+}
+
+> ^On #^Join 764 "*"
+{
+   if ([$0]==[$N])
+      {
+      if (bv.t.BotFunctions)
+	 {
+	 bxc.BotOp $1;
+	 }
+      #else
+	 {
+	 bf.JoinStack;
+	 }
+      }
+}
+
+> Alias bxc.BotOp
+{
+   if (!bg.BotScanning)
+      {
+      if ([$bv.ul.Bot.Hosts])
+	 {
+	 @ atmp.btop.chan = [$0] ? [$0] : C;
+	 @ atmp.btop.cnt = 0;
+	 @ atmp.btop.ptrs = [];
+	 $K${K}Fe ($bv.ul.Bot.Chans) zz
+	    {
+	    @ atmp.btop.cnt++;
+	    if (rmatch($atmp.btop.chan $split(: $zz)))
+	       {
+	       @ atmp.btop.nomatch = 0;
+	       if (index(! $zz)>=0)
+		  {
+		  $K${K}Fe ($zz) x
+		     {
+		     if ([$[1]x]==[!] && match(!$atmp.btop.chan $zz))
+			{
+			@ atmp.btop.nomatch = 1;
+			}
+		     }
+		  }
+	       if (!atmp.btop.nomatch)
+		  {
+		  @ atmp.btop.ptrs = [${[$atmp.btop.ptrs]?[$atmp.btop.ptrs ]:[]}$atmp.btop.cnt];
+		  }
+	       }
+	    }
+	 if ([$atmp.btop.ptrs])
+	    {
+	    @ bg.BotScanning = 1;
+	    > Stack push On Who;
+	    @ atmp.btop.nicks = [];
+	    > ^On ^Who "*"
+	       {
+	       if ([$1]!=[$N])
+		  {
+		  @ atmp.btop.ptr = rmatch($1!$3@$4 $bv.ul.Bot.Hosts);
+		  if (match($atmp.btop.ptr $atmp.btop.ptrs))
+		     {
+		     if ([$(bv.ul.Bot.UserInfo.$atmp.btop.ptr)]==[]||[$7-]==[$(bv.ul.Bot.UserInfo.$atmp.btop.ptr)])
+			{
+			@ atmp.btop.nicks = [${[$atmp.btop.nicks]?[$atmp.btop.nicks ]:[]}$1 $atmp.btop.ptr];
+			}
+		     }
+		  }
+	       }
+	    bf.Who $atmp.btop.chan;
+	    > Wait -Cmd if (1)
+	       {
+	       @ bg.BotScanning = 0;
+	       > Stack pop On Who;
+	       if ([$atmp.btop.nicks])
+		  {
+		  bf.Echo.b Sending Auth PassWd ${bv.t.BotOp?[and Op request ]:[]}to $word(0 $atmp.btop.nicks);
+		  > ^Msg $word(0 $atmp.btop.nicks) passwd $bf.word($word(1 $atmp.btop.nicks) $bv.ul.Bot.PassWds);
+		  if (bv.t.BotOp) {> ^Msg $word(0 $atmp.btop.nicks) op $atmp.btop.chan}
+		  $K${K}Fe ($restw(2 $atmp.btop.nicks)) xx zz
+		     {
+		     bf.Echo.b Sending Auth PassWd to $xx;
+		     > ^Msg $xx passwd $bf.word($zz $bv.ul.Bot.PassWds);
+		     }
+		  }
+	       bf.Purge atmp.btop;
+	       bf.JoinStack;
+	       }
+	    }
+	 }
+      #else
+	 {
+	 bf.JoinStack;
+	 }
+      }
+}
+
+> Eval bf.Echo.b Loading Complete, Time: $tdiff(${time() - bx.Start.Load});
+

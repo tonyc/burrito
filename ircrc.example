@@ -1,0 +1,30 @@
+
+###
+# Location of the burrito home dir
+
+if (BURRITO_DIR)
+  {
+  @ Burrito_Home = BURRITO_DIR;
+  }
+#else
+  {
+  @ Burrito_Home = [$HOME/.burrito];
+  }
+
+Eval Load $Burrito_Home/scripts/burrito.irc
+
+###
+# Uncomment to load the xtra script (bot auth and misc extra commands)
+
+#Xtra
+
+###
+# Uncomment to load the xtra2 script (Zippy quotes, Slap, etc)
+
+#Xtra2
+
+###
+# Uncomment to load the file offering script ZDCC
+
+#ZDcc
+

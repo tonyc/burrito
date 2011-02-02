@@ -1,0 +1,84 @@
+
+/*
+ * -------------------
+ * -=> Client Settings
+ * -------------------
+ */
+
+> Set auto_new_nick on;
+/* fucks up FunkyWindow mode... */
+> Set auto_rejoin off;
+> Set auto_unmark_away off;
+> Set auto_whowas off;
+> Set beep_on_msg off;
+> Set beep_when_away 0;
+> Set bold_video on;
+> Set channel_name_width 10;
+> Set clock on;
+> Set clock_24hour off;
+> Set display on;
+> Set exec_protection off;
+#, Set flood_warning off;
+> Set full_status_line on;
+> Set hide_private_channels off;
+> Set highlight_char bold;
+> Set indent off;
+> Set input_protection off;
+> Set inverse_video on;
+> Set lastlog_level dcc,all;
+/* [todo: make it start logging if log is on... or maybe not, i don't know] */
+> Set log off;
+> Set max_recursions 500;
+#, Set no_ctcp_flood on;
+> Set notify_handler noisy;
+> Set notify_on_termination off;
+> Set novice off;
+> Set scroll_lines 1;
+> Set send_ignore_msg off;
+> Set shell_limit 0;
+> Set show_away_once on;
+> Set show_channel_names on;
+> Set show_end_of_msgs on;
+> Set show_who_hopcount on;
+#, Set status_user - BuRRiTo - ;
+> Eval > Set status_user1 $bg.MesgNum;
+> Set -status_user2;
+> Set -status_user3;
+> Set tab on;
+> Set underline_video on;
+> Set verbose_ctcp off;
+> Set warn_of_ignores on;
+
+/* [todo: make all of these user configurable..] */
+> Alias bf.SetupClientSettings
+{
+   > ^Set beep off;
+   > ^Set beep_max 1;
+   > ^Set client_information [running: $bg.VersionReply];
+   > ^Set continued_line    ;
+   > ^Set dcc_block_size 4096;
+/* [todo: ...] */
+#  > ^Set flood_after 10;
+#  > ^Set flood_rate 5;
+#  > ^Set flood_users 1;
+
+   > ^Set history 400;
+if (bg.Loaded) {> ^Set Input_Prompt $bv.u.InputPrompt}
+   > ^Set lastlog 4000;
+   > ^Set logfile irclog;
+   > ^Set mail 1;
+   > ^Set status_away (Gone);
+   > ^Set status_format $bv.u.Status.Bar;
+   > ^Set status_hold [Press ENTER];
+   > ^Set status_mail (Mail:%M);
+   > ^Set status_mode (+%+);
+   > ^Set status_notify (W:%F);
+   > ^Set status_overwrite (O);
+   > ^Set status_query (Q:%Q);
+   > ^Set status_umode (+%#);
+   > ^Set suppress_server_motd ${[$bv.t.ServerMotd]?[Off]:[On]};
+/* from config.h.WintrHawk (ircII-EPIC2mod3 source) */
+   > ^Set user_information That USER_INFORMATION is classified... I could tell you but then I\'d have to kill you.;
+}
+bf.SetupClientSettings
+

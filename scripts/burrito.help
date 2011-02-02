@@ -1,0 +1,123 @@
+Not much here yet..
+
+The syntax is ^Xtopic[topic[topic[...]]: text
+The topic name must be upper case..
+
+Topics:
+
+HELPMENU: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33mBuRRiTo Help Topics [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+HELPMENU: [32m|              [0;35mNewNewUser [32m-[m Info for users new to scripts              [32m|
+HELPMENU: [32m|              [0;35mNewUser    [32m-[m Info for users new to burrito              [32m|
+HELPMENU: [32m| [0;35mUser  [32m-[m User commands   [1;30m*** [0;35mList   [32m-[m Friend/Shit/etc.. list commands [32m|
+HELPMENU: [32m| [0;35mOper  [32m-[m ChanOp commands [1;30m*** [0;35mZdcc   [32m-[m File offering commands (Xdcc)   [32m|
+HELPMENU: [32m| [0;35mMisc  [32m-[m Misc commands   [1;30m*** [0;35mConfig [32m-[m Configuring commands            [32m|
+HELPMENU: [32m| [0;35mXtra  [32m-[m Xtra's commands [1;30m*** [0;35mRedir  [32m-[m Redirect commands               [32m|
+HELPMENU: [32m| [0;35mTog   [32m-[m Toggles         [1;30m*** [0;35m       [32m-[m                                 [32m|
+HELPMENU: [32m| [0;35mAbout [32m-[m About burrito   [1;30m*** [0;35mBind   [32m-[m Default key binding help        [32m|
+HELPMENU: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+HELPMENU:               ----[ Syntax: /Help <Command|Topic> ]----
+
+USER: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m   User Commands    [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+USER: [32m| [mchops autojoin ov status nets netscape netss netscapestart lynx xtra [32m|
+USER: [32m| [mlog abort tog toggle resetup save loadsave cycle play rlag setlag    [32m|
+USER: [32m| [mwinshow ctcp repeat who wl w ver fing ping zping net setar hold cls  [32m|
+USER: [32m| [mexit signoff quit bye ll llpub llar llhi llmsg dmsg dque win wg ws   [32m|
+USER: [32m| [mlinks scan sc sb umode ww cdcc ex m n invite que join j part leave   [32m|
+USER: [32m| [ml jw wink wi wii ww version gone vgone qgone back vback qback mme    [32m|
+USER: [32m| [mnickc nicki nickb nickd nickr ni nick help fixchans ls ig noig chanst[32m|
+USER: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+USER:               ----[ Syntax: /Help <Command|Topic> ]----
+
+OPER: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m   Oper Commands    [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+OPER: [32m| [mrban unban bankick bk ban mass V Q dop op topic t punctk capsk       [32m|
+OPER: [32m| [mk c rkey wall fk fbk tban                                            [32m|
+OPER: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+OPER:               ----[ Syntax: /Help <Command|Topic> ]----
+
+MISC: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m   Misc Commands    [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+MISC: [32m| [32m|
+MISC: [32m| [32m|
+MISC: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+MISC:               ----[ Syntax: /Help <Command|Topic> ]----
+
+LIST: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m   List Commands    [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+LIST: [32m| [mfriendlist shitlist flist slist shit friend fri rshit rfriend rfri   [32m|
+LIST: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+LIST:               ----[ Syntax: /Help <Command|Topic> ]----
+
+XTRA: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m   Xtra Commands    [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+XTRA: [32m| [mzt zk zip zippy zippymsg zipmsg zipcmd ck slap blist botlist bot     [32m|
+XTRA: [32m| [mrbot botop fsay fmsg font fonts whereis massnotice massmsg           [32m|
+XTRA: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+XTRA:               ----[ Syntax: /Help <Command|Topic> ]----
+
+REDIR: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m Redirect Commands  [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+REDIR: [32m| [mrlm rln rlw rlc rlg rlp rle rlov klm kln klw klc klg klp kle klov    [32m|
+REDIR: [32m| [mtlm tln tlw tlc tlg tlp tle tlov wlm wln wlc wlg wlp wle wlov        [32m|
+REDIR: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+REDIR:               ----[ Syntax: /Help <Command|Topic> ]----
+
+TOG: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m     Toggles        [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+TOG: [32m|                                                                      [32m|
+TOG: [32m|[m Debug DisplayAnsi BeepOnMsg BeepOnAutoReply BeepOnWallOpAr           [32m|
+TOG: [32m|[m BeepOnKick BeepOnFriendJoin ShowWhoLeft SendAwayMsgs LogMessages     [32m|
+TOG: [32m|[m AutoJoin ShowUserBan LeaveWinKill AutoGetDCC WInslookup WallNames    [32m|
+TOG: [32m|[m AutoGone                                                             [32m|
+TOG: [32m|                                                                      [32m|
+TOG: [32m|[m ShowTime.Pub ShowTime.Msg ShowTime.Chat ShowTime.Notice ShowTime.DCC [32m|
+TOG: [32m|[m ShowTime.WallOp ShowTime.Notes ShowTime.Crap ShowTime.CtCp           [32m|
+TOG: [32m|                                                                      [32m|
+TOG: [32m|[m OV OV.Misc OV.Hack OV.Fake OV.Kill OV.OperKill OV.UnAuth OV.Full     [32m|
+TOG: [32m|[m OV.NickKill OV.Msg OV.BadUserName OV.Client OV.Bogus                 [32m|
+TOG: [32m|                                                                      [32m|
+TOG: [32m|[m Prot.Channel Prot.ChanUltra Prot.Flood Prot.Ultra Prot.Nethack       [32m|
+TOG: [32m|[m Prot.Sentry Prot.UserBan                                             [32m|
+TOG: [32m|                                                                      [32m|
+TOG: [32m|[m OpClones ServerMotd Fwin FwinTop AutoRejoin ShowChan NamesWindow     [32m|
+TOG: [32m|                                                                      [32m|
+TOG: [32m|[m Uh.Topic Uh.Pub Uh.Mode Uh.SignOff Uh.Nick Uh.Msg Uh.Notice          [32m|
+TOG: [32m|[m Uh.DccChat Uh.WallOp Uh.ChanWallOp Uh.CtCp Uh.CtCpReply WhoLong      [32m|
+TOG: [32m|                                                                      [32m|
+TOG: [32m|[m Beeps Sounds AlwaysPlaySounds FriendFunctions FriendOp ShitFunctions [32m|
+TOG: [32m|[m BotFunctions BotOp BotWait                                           [32m|
+TOG: [32m|                                                                      [32m|
+TOG: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+TOG:               ----[ Syntax: /Help <Command|Topic> ]----
+
+NEWUSER: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m      NewUser       [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+NEWUSER: [32m|[m Q&A:                                                                 [32m|
+NEWUSER: [32m|[m  * WTF are there two windows?                                        [32m|
+NEWUSER: [32m|[m  [32m|
+NEWUSER: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+NEWUSER:               ----[ Syntax: /Help <Command|Topic> ]----
+
+ZDCCXDCC: [1;30m+[0;32m---[1;30m . ~ . ~ . ~ [0;32m----[1;34m===[30m* [0;33m   ZDcc Commands    [1;30m*[34m===[0;32m----[1;30m ~ . ~ . ~ . [0;32m----[1;30m+
+ZDCCXDCC: [32m| DOffer List Offer PList Send [32m|
+ZDCCXDCC: [32m| [32m|
+ZDCCXDCC: [1;30m+[0;32m----------------------------------------------------------------------[1;30m+
+ZDCCXDCC:               ----[ Syntax: /Help <Command|Topic> ]----
+
+Commands:
+
+SCSCAN: *** Name: [35mScan Channel[m  Aliases: [35mSC[m, [35mSCAN[m
+SCSCAN: Syntax: /SC [[#]channel]
+SCSCAN:
+SCSCAN: Scans current channel or the channel you specify and gives list and
+SCSCAN: number of users.
+SCSCAN:
+SCSCAN: --- See Also: [32mT[m
+
+TOPICT: *** Name: [35mTopic[m  Aliases: [35mTOPIC[m, [35mT[m
+TOPICT: Syntax: /T [#channel] [topic]
+TOPICT:
+TOPICT: Change topic, if no topic is given shows topic, if no channel is
+TOPICT: given uses current channel
+TOPICT:
+TOPICT: --- See Also: [32mSC[m, [32mST[m
+
+<z>: *** Name: [35m<z>[m  Aliases: [35m<z>[m, [35m[m
+<z>: Syntax: /
+<z>:
+<z>:
+<z>: --- See Also: [32m[m, [32m[m
+

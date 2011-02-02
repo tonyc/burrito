@@ -1,0 +1,1759 @@
+
+/*
+ * -------------
+ * -=> Functions
+ * -------------
+ */
+
+/* echo functions */
+/* -------------- */
+> Alias bf.Echo.d if (bv.t.Debug) {> Xecho -Window main -Level crap $bv.cs.Decho $*$bv.cs.D}
+> Alias bf.Echo.b
+{
+   @ bg.Last.BEcho = [\[*\] $*];
+   > Xecho -Window main -Level crap $bv.cs.Becho $*$bv.cs.D;
+}
+> Alias bf.Echo.ov
+{
+   if ([$(bv.t.OV.$0)])
+      {
+      @ bg.Last.OVEcho = [\[OV\] $1-];
+      > Xecho -Window ${bv.t.OV?[-OV-]:[main]} -Level Snotes $bv.cs.Oecho $1-$bv.cs.D;
+      }
+}
+> Alias bf.Echo.s > Xecho -Window main -Level snotes $bv.cs.Secho $*$bv.cs.D;
+> Alias bf.Echo.y
+{
+   @ bg.Last.BEcho = [$*];
+   > Xecho -Window main -Level crap $*$bv.cs.D;
+}
+
+> Alias bf.Echo.x > Xecho -Window main -Level $2 $bf.GetTime($0-1)$3-$bv.cs.D;
+> Alias bf.Echo.z > Xecho -Level $2 $bf.GetTime($0-1)$3-$bv.cs.D;
+> Alias bf.Echo.w
+{
+   @ bg.Last.BEcho = [$4-];
+   > Xecho -Window $2 -Level $3 $bf.GetTime($0-1)$4-$bv.cs.D;
+}
+
+> Alias bf.Echo.h > Xecho -Window main -Level crap $bv.cs.Hecho $*$bv.cs.D;
+> Alias bf.Echo.b.Window > Xecho -Window $0 -Level crap $bv.cs.Becho $1-$bv.cs.D;
+#> Alias bf.Echo.s.Window > Xecho -Window $0 -Level snotes $bv.cs.Secho $$1-$bv.cs.D;
+
+> Alias bf.CtCpReply > Quote NOTICE $0 :$1-\;
+> Alias bf.Notice > Quote NOTICE $0 :$1-;
+> Alias bf.Action > Quote PRIVMSG $0 :ACTION $1-\;
+> Alias bf.Mesg > Quote PRIVMSG $0 :$1-;
+> Alias bf.Mode > Mode $*;
+> Alias bf.Kick > Kick $*;
+> Alias bf.Nick > Quote NICK $*;
+> Alias bf.Who > Quote WHO $*;
+
+/* parse functions */
+/* --------------- */
+
+/* void bf.Parse.ChannelNick(int showchan, char *nick, char *userhost,
+			     char *chan, char *newnick) */
+> Alias bf.Parse.ChannelNick
+{
+   if ([$4]==[$N])
+      {
+      bf.Show.UserNick $4 $2;
+      }
+   #else
+      {
+      bf.Show.ChannelNick${[$0]?[Chan]:[]}${bv.t.Uh.Nick?[Uh]:[]} $1 $bf.CleanShow($2-3) $4-;
+      }
+}
+/* void bf.Parse.ChannelSignoff(int showchan, char *nick, char *userhost,
+				char *chan, char *reason) */
+> Alias bf.Parse.ChannelSignOff
+{
+   bf.Show.${bf.IsSplit($4-)?[NetSplit]:[ChannelSignOff]}${[$0]?[Chan]:[]}${bv.t.Uh.Signoff?[Uh]:[]} $1 $bf.CleanShow($2-3) $bf.CleanAnsi($4-);
+   @ atmp.notifynum = bf.IsUserLevel(n $1!$2 $3);
+   if (atmp.notifynum)
+      {
+      bf.Show.FriendSignOff $bf.Word($atmp.notifynum $bv.ul.Friend.Hosts) $bf.Word($atmp.notifynum $bv.ul.Friend.Levels) $1 $bf.CleanShow($2-);
+      }
+}
+
+/* void bf.Parse.CtCp(char *nick, char *userhost, char *target, char *ctcp) */
+> Alias bf.Parse.CtCp
+{
+   if ([$bx.ZDccVersion]!=[] && ([$3]==[XDCC] || [$3]==[ZDCC]))
+      {
+      bxf.Parse.ZDccRequest $0-1 $4-;
+      }
+   #else
+      {
+      if ([$3]!=[ACTION] && [$3]!=[DCC])
+	 {
+	 bf.Show.Ctcp${rmatch($3 $bg.ValidCtCps $bg.CtCpFuncs)?[]:[Unknown]}${[$2]==[$N]?[User]:[]}${bv.t.Uh.CtCp?[Uh]:[]} $0 $bf.CleanShow($1-3) ${[$3]!=[PING]?[${[$4]?[$4-]:[]}]:[${[$5]?[$5-]:[]}]};
+	 if (rmatch($3 $bg.CtCpFuncs))
+	    {
+	    bf.CtCpFunc$3 $*;
+	    }
+	 }
+      }
+}
+
+> Alias bf.CtCpFuncPing
+{
+   if ([$bv.m.Ping]==[.zippy.])
+      {
+      bf.CtCpReply $0 PoNG $bx.Zippy[$rand($bx.ZippyNum)];
+      }
+   #else
+      {
+      if ([$bv.m.Ping])
+	 {
+	 bf.CtCpReply $0 PoNG $bv.m.Ping;
+	 }
+      }
+}
+
+> Alias	bf.CtCpFuncFinger
+{
+   if ([$bv.m.Finger]==[.zippy.])
+      {
+      bf.CtCpReply $0 FiNGeR $bx.Zippy[$rand($bx.ZippyNum)];
+      }
+   #else
+      {
+      if ([$bv.m.Finger])
+	 {
+	 bf.CtCpReply $0 FiNGeR $bv.m.Finger;
+	 }
+      }
+}
+
+> Alias bf.CtCpFuncZippy
+{
+   if ([$bx.Zippy.1])
+      {
+      bf.CtCpReply $0 ZiPPY $bx.Zippy[$rand($bx.ZippyNum)];
+      }
+}
+
+> Alias bf.CtCpFuncOp
+{
+   if (bv.t.FriendFunctions)
+      {
+      @ atmp.fop.chan = [];
+      if ([$4])
+	 {
+	 @ atmp.fop.chan = [$4];
+	 }
+      #else
+	 {
+	 if (ischannel($2))
+	    {
+	    @ atmp.fop.chan = [$2];
+	    }
+	 #else
+	    {
+	    $K${K}Fe ($mychannels()) x
+	       {
+	       if (onchannel($0 $x))
+		  {
+		  @ atmp.fop.chan = [$atmp.fop.chan $x];
+		  }
+	       }
+	    }
+	 }
+      $K${K}Fe ($atmp.fop.chan) x
+	 {
+	 if ([$1]==[$bg.UserAddress] || bf.IsUserLevel(o|O $0!$1 $x))
+	    {
+	    if (ischanop($0 $x))
+	       {
+	       bf.Notice $0 [*] You\'re already a channel operator on $x\!;
+	       }
+	    #else
+	       {
+	       bf.Echo.b Friend Op: $0 on $x\.;
+	       bf.Mode $x +o $0;
+	       }
+	    }
+	 #else
+	    {
+	    bf.Notice $0 [*] You do not have op access on channel $x\.;
+	    }
+	 }
+      bf.Purge atmp.fop;
+      }
+}
+
+> Alias bf.CtCpFuncInvite
+{
+   if (bv.t.FriendFunctions)
+      {
+      @ atmp.inv.chan = bf.MakeChan($4);
+      if ([$atmp.inv.chan])
+	 {
+	 if ([$1]==[$bg.UserAddress] || bf.IsUserLevel(i|I $0!$1 $atmp.inv.chan))
+	    {
+	    if (onchannel($0 $atmp.inv.chan))
+	       {
+	       bf.Notice $0 [*] You are already on $atmp.inv.chan\!;
+	       }
+	    #else
+	       {
+	       if (ischanop($N $atmp.inv.chan))
+		  {
+#		  bf.Echo.b Friend Invite: $0 to $atmp.inv.chan\.;
+		  > ^Invite $0 $atmp.inv.chan;
+		  if ([$key($atmp.inv.chan)]!=[])
+		     {
+		     bf.Notice $0 [*] Channel Key on $atmp.inv.chan\: "$bf.CleanShow($key($atmp.inv.chan))";
+		     }
+		  }
+	       #else
+		  {
+		  bf.Echo.b Unable to invite $0\, you are not a channel operator on $atmp.inv.chan\.;
+		  bf.Notice $0 [*] Unable to invite you, i am not a channel operator on $atmp.inv.chan\.;
+		  }
+	       }
+	    }
+	 #else
+	    {
+	    bf.Echo.b Friend Invite: $0 to $atmp.inv.chan denied - no access.;
+	    bf.Notice $0 [*] You do not have invite access on $atmp.inv.chan\.;
+	    }
+	 }
+      #else
+	 {
+	 if ([$1]==[$bg.UserAddress] || bf.IsUserLevel(? $0!$1))
+	    {
+	    bf.Notice $0 [*] Inivte: syntax: /CTCP $N Invite <[#]chan>;
+	    }
+	 #else
+	    {
+	    bf.Echo.b Friend Invite: $0 denied - no access.;
+	    bf.Notice $0 [*] You do not have invite access.;
+	    }
+	 }
+      bf.Purge atmp.inv;
+      }
+}
+
+> Alias bf.CtCpFuncUnban
+{
+   if (bv.t.FriendFunctions)
+      {
+      @ atmp.ub.chan = bf.MakeChan($4);
+      if ([$atmp.ub.chan])
+	 {
+	 if ([$1]==[$bg.UserAddress] || bf.IsUserLevel(u|U $0!$1 $atmp.ub.chan))
+	    {
+	    if (ischanop($N $atmp.ub.chan))
+	       {
+	       bc.UnBan $atmp.ub.chan $0;
+	       bf.Notice $0 [*] Unbanning you from $atmp.ub.chan\.;
+	       }
+	    #else
+	       {
+	       bf.Echo.b Unable to Unban $0\, you are not a channel operator on $atmp.ub.chan\.;
+	       bf.Notice $0 [*] Unable to Unban you, i am not a channel operator on $atmp.ub.chan\.;
+	       }
+	    }
+	 #else
+	    {
+	    bf.Echo.b Friend Unban: $0 on $atmp.ub.chan denied - no access.;
+	    bf.Notice $0 [*] You do not have Unban access on $atmp.ub.chan\.;
+	    }
+	 }
+      #else
+	 {
+	 if ([$1]==[$bg.UserAddress] || bf.IsUserLevel(? $0!$1))
+	    {
+	    bf.Notice $0 [*] Unban: syntax: /CTCP $N Unban <[#]chan>;
+	    }
+	 #else
+	    {
+	    bf.Echo.b Friend Unban: $0 denied - no access.;
+	    bf.Notice $0 [*] You do not have unban access.;
+	    }
+	 }
+      bf.Purge atmp.ub;
+      }
+}
+
+/* void bf.Parse.CtCpReply(char *nick, char *userhost, char *ctcpreply) */
+> Alias bf.Parse.CtCpReply
+{
+    @ bg.Last.CtCp =  [CtCp ${[$2-3]==[ERRMSG ZPING]||[$2-4]==[ERRMSG ERRMSG ZPING]?[zPiNG]:[$bf.CleanShow($2)]} for $0!$bf.CleanShow($1): ${[$2]==[PING]?[$tdiff(${time() - [$3]})]:[${[$2-3]==[ERRMSG ZPING]?[$tdiff(${time() - [$4]})]:[${[$2-4]==[ERRMSG ERRMSG ZPING]?[$tdiff(${time() - [$5]})]:[$bf.CleanAnsi($3-)]}]}]}];
+##   bf.Show.CtCp${[$2]==[PING]||[$2 $3]==[ECHO ZPING]?[Ping]:[]}Reply${bv.t.Uh.CtCpReply?[Uh]:[]} $0 $bf.CleanShow($1-2) ${[$2]==[PING]?[$tdiff(${time() - [$3]})]:[${[$2 $3]==[ECHO ZPING]?[$tdiff(${time() - [$4]})]:[$bf.CleanAnsi($3-)]}]};
+#   bf.Show.CtCp${[$2]==[PING]||[$2 $3]==[ECHO ZPING]?[Ping]:[]}Reply${bv.t.Uh.CtCpReply?[Uh]:[]} $0 $bf.CleanShow($1-2) ${[$2]==[PING]?[$tdiff(${time() - [$3]})]:[${[$2 $3]==[ECHO ZPING]?[$tdiff(${time() - [$4]})]:[$bf.CleanAnsi($3-)]}]};
+   bf.Show.CtCp${[$2]==[PING]||[$2-3]==[ERRMSG ZPING]||[$2-4]==[ERRMSG ERRMSG ZPING]?[Ping]:[]}Reply${bv.t.Uh.CtCpReply?[Uh]:[]} $0 $bf.CleanShow($1-2) ${[$2]==[PING]?[P $tdiff(${time() - [$3]})]:[${[$2-3]==[ERRMSG ZPING]?[zP $tdiff(${time() - [$4]})]:[${[$2-4]==[ERRMSG ERRMSG ZPING]?[zP $tdiff(${time() - [$5]})]:[$bf.CleanAnsi($3-)]}]}]};
+}
+/* void bf.Parse.DccChat(char *nick, char *userhost, char *text) */
+> Alias bf.Parse.DccChat
+{
+   @ bg.Last.Chat = [=$0\!$1= $2-];
+#   @ bg.Last.Chat = [=$0\= $2-];
+   bf.Show.DccChat${bv.t.Uh.DccChat?[Uh]:[]} $0 $bf.CleanShow($1) $bf.CleanAnsi($2-);
+/*    @ bv.cl.Msg = bf.Push(=$0 $bv.cl.Msg); */
+   bf.Push bv.cl.Msg =$0;
+}
+/* void bf.Parse.DccConnect(char *nick, char *type, char *info) */
+> Alias bf.Parse.DccConnect
+{
+#   bf.Show.DccConnect $0 $bf.CleanShow($1-);
+
+/* the UserHost command down here doesn't want to work.. wtf? */
+/* if ([$1]==[CHAT])
+ *     {
+ *     if ([$(bg.DccChatUH.$encode($0))]==[])
+ *	  {
+ *	  > UserHost $0 -Cmd
+ *	     {
+ *	     if ([$4]!=[<UNKNOWN>])
+ *		{
+ *		 @ bg.DccChatUH.$encode($0) = [$3@$4];
+ *		}
+ *	     }
+ *	  }
+ *     }
+ */
+}
+/* void bf.Parse.DccLost(char *nick, char *type, char *info) */
+> Alias bf.Parse.DccLost
+{
+#   bf.Show.DccLost $0 $bf.CleanShow($1-);
+   if ([$1]==[CHAT])
+      {
+      if ([$(bg.DccChatUH.$encode($0))]!=[])
+	 {
+	 @ bg.DccChatUH.$encode($0) = [];
+	 }
+      }
+}
+/* void bf.Parse.DccRequest(char *nick, char *userhost, char *type,
+			    char *args) */
+> Alias bf.Parse.DccRequest
+{
+#   bf.Show.DccRequest $0 $bf.CleanShow($1-);
+   if ([$2]==[SEND])
+      {
+      if (bv.t.AutoGetDCC)
+	 {
+	 bf.Echo.b AutoGETing $3 from $0\.;
+	 > DCC get $0 $3;
+	 }
+      #else
+	 {
+	 @ bg.DccLast = [$0 $3];
+	 bf.Echo.b Type /Get to accept;
+	 }
+      }
+   if ([$2]==[CHAT])
+      {
+      @ bg.DccChatUH.$encode($0) = [$1];
+      @ bg.ChatNick = [$0];
+      bf.Echo.b Type /Chat to accept, or /NoChat to cancel.;
+      }
+}
+
+/* void bf.Parse.Invite(char *nick, char *userhost, char *channel) */
+> Alias bf.Parse.Invite
+{
+   bf.Show.Invite $0 $bf.CleanShow($1-);
+   if (bv.t.AutoJoinOnInvite)
+      {
+      bc.Join $2;
+      }
+}
+/* void bf.Parse.Join(char *nick, char *userhost, char *channel) */
+> Alias bf.Parse.Join
+{
+   bf.Show.Join $0 $bf.CleanShow($1-);
+   if ([$0]==[$N])
+      {
+      @ bg.MyChannels = mychannels();
+      @ bg.StatusChannels = [${[$bg.StatusChannels]?[$bg.StatusChannels ]:[]}$2\:$atmp.join.window];
+      @ atmp.join.window = [];
+      bf.SetStatusBar;
+      if ([$bx.XtraVersion]==[]) {bf.JoinStack}
+      if ([$key($2)])
+	 {
+	 @ bg.Key.$encode($toupper($2)) = key($2);
+	 }
+
+/*    if (bv.t.Cache)
+ *	  {
+ *	  @ atmp.start.cache.time = time();
+ *	  > On ^315 "% $2 *"
+ *	     {
+ *	     > On 315 -"% $1 *";
+ *	     > On Who -"$1 *";
+ *	     bf.Echo.d Cache time: $tdiff(${time() - atmp.start.cache.time});
+ *	     }
+ *	  > On ^Who "$2 *"
+ *	     {
+ *	     if (bv.t.ShowWhoOnJoinCache)
+ *		{
+ *		# [todo: ...]
+ *		bf.Show.Who${bv.t.WhoLong?[Long]:[]} $*;
+ *		}
+ *	     }
+ *	  bf.Who $2;
+ *	  }
+ */
+
+      }
+   #else
+      {
+      @ atmp.shitnum = bf.IsShitLevel(? $0!$1 $2);
+      if (atmp.shitnum)
+	 {
+	 bf.Show.ShitJoin $bf.Word($atmp.shitnum $bv.ul.Shit.Hosts) $bf.Word($atmp.shitnum $bv.ul.Shit.Levels) $0 $bf.CleanShow($1-);
+	 if (ischanop($N $2))
+	    {
+	    @ atmp.shitnum = bf.IsShitLevel(a|A|k $0!$1 $2);
+	    if (atmp.shitnum)
+	       {
+	       bf.Mode $2 -o+b $0 $bf.Word($atmp.shitnum $bv.ul.Shit.Hosts);
+	       bf.Kick $2 $0 $sar(%reason$bf.ShitReason($atmp.shitnum)$bv.fs.ShitKick);
+	       }
+	    }
+	 }
+      #else
+	 {
+	 if (ischanop($N $2) && bv.t.FriendOp && bf.IsUserLevel(O $0!$1 $2))
+	    {
+	    if (bv.t.FriendOpDelay)
+	       {
+	       @ atmp.fop.nick = [$0];
+	       @ atmp.fop.chan = [$2];
+	       > ^Timer $bv.l.FriendOpDelay
+		  {
+		  if (!ischanop($atmp.fop.nick $atmp.fop.chan))
+		     {
+		     bf.Mode $atmp.fop.chan +o $atmp.fop.nick;
+		     }
+		  }
+	       }
+	    #else
+	       {
+	       bf.Mode $2 +o $0;
+	       }
+	    }
+	 #else
+	    {
+	    if (ischanop($N $2) && bv.t.OpClones && [$1]==[$bg.UserAddress])
+	       {
+	       bf.Mode $2 +o $0;
+	       }
+	    }
+	 }
+      @ atmp.notifynum = bf.IsUserLevel(n $0!$1 $2);
+      if (atmp.notifynum)
+	 {
+	 bf.Show.FriendJoin $bf.Word($atmp.notifynum $bv.ul.Friend.Hosts) $bf.Word($atmp.notifynum $bv.ul.Friend.Levels) $0 $bf.CleanShow($1-);
+	 if (([$A]!=[] || bv.t.AlwaysPlaySounds) && bv.t.BeepOnFriendJoin)
+	    {
+	    bf.Play $bv.s.FriendJoin;
+	    }
+	 }
+      }
+}
+
+/* void bf.Parse.Kick(char *nick, char *userhost, char *target,
+		      char *channel, char *reason) */
+> Alias bf.Parse.Kick
+{
+   if ([$2]==[$N])
+      {
+      if (([$A]!=[] || bv.t.AlwaysPlaySounds) && bv.t.BeepOnKick)
+	 {
+	 bf.Play $bv.s.Kick;
+	 }
+      @ bg.MyChannels = mychannels();
+      @ bg.StatusChannels = filter($3\:% $bg.StatusChannels);
+      bf.SetStatusBar;
+      bf.Show.KickUser${bv.t.Uh.Kick?[Uh]:[]} $0 $bf.CleanShow($1-3) $bf.CleanAnsi($4-);
+      @ atmp.kick.win = winnam();
+      > Window Swap $3;
+      > Window Show $3;
+      > Window Remove $3 Name $winnum();
+      if (bv.t.AutoRejoin)
+	 {
+	 bc.Join Normal $3;
+	 }
+      > Window Swap $atmp.kick.win;
+      > Window Show $atmp.kick.win;
+      }
+   #else
+      {
+      bf.Show.Kick${bv.t.Uh.Kick?[Uh]:[]} $0 $bf.CleanShow($1-3) $bf.CleanAnsi($4-);
+/*    if (bf.IsUserLevel(P )) */
+      }
+}
+/* void bf.Parse.Leave(char *nick, char *userhost, char *channel) */
+> Alias bf.Parse.Leave
+{
+   if ([$0]==[$N])
+      {
+      @ bg.MyChannels = remw($2 $mychannels());
+      @ bg.StatusChannels = filter($2\:% $bg.StatusChannels);
+      bf.SetStatusBar;
+      }
+   bf.Show.Leave $0 $bf.CleanShow($1-);
+}
+/* void bf.Parse.Mode(int showchan, char *nick, char *userhost, char *channel,
+		      char *mode) */
+> Alias bf.Parse.Mode
+{
+   if ([$3]!=[$N])
+      {
+      if (match(*.* $1))
+	 {
+	 bf.Show.NetHack${[$0]?[Chan]:[]} $1 $bf.CleanShow($2-);
+	 }
+      #else
+	 {
+	 bf.Show.ChanMode${[$0]?[Chan]:[]}${bv.t.Uh.Mode?[Uh]:[]} $1 $bf.CleanShow($2-);
+	 }
+      }
+   #else
+      {
+      bf.Show.UserMode $1-;
+      }
+}
+/* void bf.Parse.ModeStripped(char *nick, char *userhost, char *channel,
+			      char *mode) */
+> Alias bf.Parse.ModeStripped
+{
+   bf.Echo.d ModeStripped: [$*];
+   if ([$3]==[+k])
+      {
+      @ bg.Key.$encode($toupper($2)) = [$4-];
+      }
+   if ([$3]==[+b])
+      {
+      if (match($4 $N!$bg.UserAddress))
+	 {
+	 bf.Show.UserBan $0 $bf.CleanShow($1-);
+	 if ([$0]!=[$N] && bv.t.Prot.UserBan && ischanop($N $2))
+	    {
+	    bf.Mode $2 -ob $0 $4;
+	    }
+	 }
+      }
+}
+/* void bf.Parse.Msg(char *nick, char *userhost, char *text) */
+> Alias bf.Parse.Msg
+{
+   if ([$bx.ZDccVersion]!=[] && ([$2]==[XDCC] || [$2]==[ZDCC]))
+      {
+      bxf.Parse.ZDccRequest $0-1 $3-;
+      }
+   #else
+      {
+      @ bg.Last.Msg = [\[$0\!$1\] $2-];
+      bf.Show.Msg${bv.t.Uh.Msg?[Uh]:[]} $0 $bf.CleanShow($1) $bf.CleanAnsi($2-);
+      if (bg.Recording) {@ bg.MesgNum++}
+      if (([$A]!=[] || bv.t.AlwaysPlaySounds) && bv.t.BeepOnMsg)
+	 {
+	 bf.Play $bv.s.Msg;
+	 }
+/*       @ bv.cl.Msg = bf.Push($0 $bv.cl.Msg); */
+      bf.Push bv.cl.Msg $0;
+      bf.GetUrl $2-;
+      }
+}
+/* void bf.Parse.MsgGroup(char *nick, char *userhost, char *target,
+			  char *text) */
+> Alias bf.Parse.MsgGroup
+{
+   @ bg.Last.MsgGroup = [\[$0\!$1$2\] $3-];
+   bf.Show.MsgGroup $0 $bf.CleanShow($1-2) $bf.CleanAnsi($3-);
+}
+/* void bf.Parse.Nickname(char *nick, char *userhost, char *newnick) */
+> Alias bf.Parse.Nickname
+{
+   bf.Show.NickName${bv.t.Uh.NickName?[Uh]:[]} $0 $bf.CleanShow($1) $2;
+}
+/* void bf.Parse.Notice(char *nick, char *userhost, char *text) */
+> Alias bf.Parse.Notice
+{
+   if (numwords($*)<=4 && [$0]==[$N] && [$2]==[LagPing])
+      {
+      @ bg.Lag = time() - [$3];
+      if (bg.Lag > 0)
+	 {
+	 > ^Set status_user Lag: $[3]bg.lag;
+	 }
+      #else
+	 {
+	 > ^Set status_user -BuRRiTo- ;
+	 }
+      @ bg.TestingLag = 0;
+      @ bg.UserAddress = [$1];
+      }
+   #else
+      {
+      if (!([$2]==[LagPing]&&[$4-]==[]))
+	 {
+	 if (match(*WallOp* $2))
+	    {
+	    @ bg.Last.WallOp = [$0\!$1$2-];
+	    @ atmp.wallop.ar = bf.IsArWord($3-);
+	    @ atmp.wallop.cmd = [bf.Show.ChanWallOp${bv.t.Uh.ChanWallOp?[Uh]:[]}${atmp.wallop.ar?[Ar]:[${bf.IsUserLevel(h $0!$1)?[Hi]:[]}]}];
+	    @ atmp.wallop.chan = [];
+	    @ atmp.wallop.format = tolower($2);
+
+	    $K${K}Fe ($tolower($mychannels())) atmp.wallop.x
+	       {
+	       if ([$atmp.wallop.format]!=[$sar($atmp.wallop.x\$atmp.wallop.format)])
+		  {
+		  @ atmp.wallop.chan = atmp.wallop.x;
+		  }
+	       }
+	    if ([$atmp.wallop.chan])
+	       {
+	       $atmp.wallop.cmd $0 $bf.CleanShow($1 $atmp.wallop.chan) $bf.CleanAnsi($2-);
+	       }
+	    #else
+	       {
+	       @ atmp.wallop.onchan = 0;
+	       $K${K}Fe ($mychannels()) atmp.wallop.x
+		  {
+		  if (onchannel($0 $atmp.wallop.x))
+		     {
+		     @ atmp.wallop.onchan += 1;
+		     @ atmp.wallop.chan = atmp.wallop.x;
+		     }
+		  }
+	       if (atmp.wallop.onchan==1)
+		  {
+		  $atmp.wallop.cmd $0 $bf.CleanShow($1 $atmp.wallop.chan) $bf.CleanAnsi($2-);
+		  }
+	       #else
+		  {
+		  $atmp.wallop.cmd $0 $bf.CleanShow($1) main $bf.CleanAnsi($2-);
+		  }
+	       }
+	    if (atmp.wallop.ar && bg.Recording) {@ bg.MesgNum++}
+	    if (([$A]!=[] || bv.t.AlwaysPlaySounds) && atmp.wallop.ar && bv.t.BeepOnWallOpAr)
+	       {
+	       bf.Play $bv.s.WallOpAr;
+	       }
+	    if (atmp.wallop.ar)
+	       {
+/* 	       @ bv.cl.Ar = bf.Push($0 $bv.cl.Ar); */
+	       bf.Push bv.cl.Ar $0;
+	       }
+	    bf.Purge atmp.wallop;
+	    }
+	 #else
+	    {
+	    @ bg.Last.Notice = [-$0\!$1\- $2-];
+	    bf.Show.Notice${bv.t.Uh.Notice?[Uh]:[]} $0 $bf.CleanShow($1) $bf.CleanAnsi($2-);
+	    }
+	 }
+      }
+   bf.GetUrl $2-;
+}
+/*  */
+> Alias bf.Parse.NotifySignoff
+{
+   bf.Echo.d NotifySignoff: $*;
+   bf.Show.NotifySignoff $*;
+}
+/*  */
+> Alias bf.Parse.NotifySignon
+{
+   bf.Echo.d NotifySignon: $*;
+   bf.Show.NotifySignon $*;
+}
+
+/* void bf.Parse.Public(char *type, char *showtype, int showchan, char *nick,
+			char *userhost, char *channel, char *text) */
+> Alias bf.Parse.Public
+{
+   @ atmp.pub.ar = bf.IsArWord($6-);
+   @ atmp.pub.show.func = [bf.Show.$0${[$1]?[$1]:[]}${[$2]?[chan]:[]}${bv.t.Uh.Pub?[Uh]:[]}${atmp.pub.ar?[Ar]:[${bf.IsUserLevel(h $3!$4)?[Hi]:[]}]}];
+   $atmp.pub.show.func $3 $bf.CleanShow($4-5) $bf.CleanAnsi($6-);
+   if (match("(%)" $6))
+      {
+      $atmp.pub.show.func $3 $bf.CleanShow($4-5) $bf.CleanAnsi($bf.DecodeLCM($7-)) $bv.cs.LCM1 $decode($mid(3 4 $6))$bv.cs.LCM2;
+      }
+
+   if (atmp.pub.ar)
+      {
+      if (bg.Recording)
+	 {
+	 @ bg.MesgNum++
+	 }
+      if (([$A]!=[] || bv.t.AlwaysPlaySounds) && bv.t.BeepOnAutoReply)
+	 {
+	 bf.Play $bv.s.AutoReply;
+	 }
+/*       @ bv.cl.Ar = bf.Push($3 $bv.cl.Ar); */
+      bf.Push bv.cl.Ar $3;
+      }
+   bf.GetUrl $6-;
+   if (bg.BWords!=[])
+      {
+      $K${K}Fe ($bg.BWords) x
+	 {
+	 if (match($x $6-))
+	    {
+	    bc.Kick $5 $3 $bv.m.WordKick;
+	    }
+	 }
+      }
+   bf.Purge atmp.pub;
+}
+/* void bf.Parse.SendAction(char *channel, char *text) */
+> Alias bf.Parse.SendAction
+{
+   if (onchannel($N $0))
+      {
+      bf.Show.SendAction $bf.CleanShow($0) $bf.CleanAnsi($1-);
+      }
+   #else
+      {
+      bf.Show.SendActionTarget $bf.CleanShow($0) $bf.CleanAnsi($1-);
+      }
+}
+/* void bf.Parse.SendDccChat(char *nick, char *text) */
+> Alias bf.Parse.SendDccChat
+{
+   bf.Show.SendDccChat $0 $bf.CleanAnsi($1-);
+/*    @ bv.cl.Msg = bf.Push(=$0 $bv.cl.Msg); */
+   bf.Push bv.cl.Msg =$0;
+}
+/* void bf.Parse.SendMsg(char *nick, char *text) */
+> Alias bf.Parse.SendMsg
+{
+   bf.Show.SendMsg $0 $bf.CleanAnsi($1-);
+/*    @ bv.cl.Msg = bf.Push($0 $bv.cl.Msg); */
+   bf.Push bv.cl.Msg $0;
+}
+/* void bf.Parse.SendNotice(char *target, char *text) */
+> Alias bf.Parse.SendNotice
+{
+   bf.Show.SendNotice $bf.CleanShow($0) $bf.CleanAnsi($1-);
+}
+/* void bf.Parse.SendPublic(char *channel, char *text) */
+> Alias bf.Parse.SendPublic
+{
+   if (onchannel($N $0))
+      {
+      bf.Show.SendPublic $bf.CleanShow($0) $bf.CleanAnsi($1-);
+      }
+   #else
+      {
+      bf.Show.SendMsg $bf.CleanShow($0) $bf.CleanAnsi($1-);
+      }
+}
+#> Alias bf.Parse.Sendtalk bf.Show.SendTalk $bf.CleanShow($*);
+#> Alias bf.Parse.Signoff bf.Show.SignOff $bf.CleanShow($*);
+#> Alias bf.Parse.Talk bf.Show.Talk $bf.CleanShow($*);
+/* void bf.Parse.Topic(char *nick, char *userhost, char *channel,
+		       char *text) */
+> Alias bf.Parse.Topic
+{
+   bf.Show.TopicChange${bv.t.Uh.Topic?[Uh]:[]} $0 $bf.CleanShow($1-2) $bf.CleanAnsi($3-);
+   bf.GetUrl $3-;
+}
+/* void bf.Parse.Wall(hmm..) */
+> Alias bf.Parse.Wall
+{
+   bf.Echo.d Wall: $*;
+   bf.Show.Wall $bf.CleanShow($*);
+}
+/* void bf.Parse.WallOp(hmm..) */
+> Alias bf.Parse.WallOp
+{
+   bf.Echo.d WallOp: $*;
+   bf.Show.WallOp $bf.CleanShow($*);
+}
+/* void bf.Parse.Who(char *channel, char *nick, char *info, char *user,
+ *                   char *host, char *server, char *hopcount,
+		     char *userinfo */
+> Alias bf.Parse.Who
+{
+   bf.Show.Who${bv.t.WhoLong?[Long]:[]} $bf.CleanShow($0) $1-2 $bf.CleanShow($3-5) $6 $bf.CleanAnsi($7-);
+}
+
+/* void bf.Parse.CantSend(char *server, char *channel, char *text) */
+> Alias bf.Parse.CantSend
+{
+   bf.Show.CantSend $bf.CleanShow($*);
+}
+/* void bf.Parse.NotOnChan(hmm..) */
+> Alias bf.Parse.NotOnChan
+{
+   bf.Echo.d NotOnChan: $*;
+   bf.Show.NotOnChan $bf.CleanShow($*);
+}
+/* void bf.Parse.Banned(char *server, char *channel, char *text) */
+> Alias bf.Parse.Banned
+{
+   bf.Show.Banned $bf.CleanShow($*);
+   if (bv.t.ShowUserBan)
+      {
+      @ atmp.banned.chan = [$1];
+      @ atmp.banned.pats = [];
+      > Stack push On 367;
+      > Stack push On 368;
+      > ^On ^367 "*"
+	 {
+	 if (match($2 $N!$bg.UserAddress))
+	    {
+	    @ atmp.banned.pats = [$atmp.banned.pats $2];
+	    }
+	 }
+      > ^On ^368 "*"
+	 {
+	 > Stack pop On 367;
+	 > Stack pop On 368;
+	 if ([$atmp.banned.pats])
+	    {
+	    bf.Echo.b Bans matching you in $atmp.banned.chan\: $atmp.banned.pats;
+	    }
+	 #else
+	    {
+	    bf.Echo.b No bans matching you found in $atmp.banned.chan\.;
+	    }
+	 bf.Purge atmp.banned;
+	 bf.JoinStack;
+	 }
+      bf.Mode $1 b;
+      }
+   #else
+      {
+      bf.JoinStack;
+      }
+}
+/* void bf.Parse.InviteOnly(hmm..) */
+> Alias bf.Parse.InviteOnly
+{
+   bf.Echo.d InviteOnly: $*;
+   bf.Show.InviteOnly $bf.CleanShow($*);
+}
+/* void bf.Parse.BadChanKey(char *server, char *channel, char *text) */
+> Alias bf.Parse.BadChanKey
+{
+   bf.Show.BadChanKey $bf.CleanShow($*);
+   bf.JoinStack;
+}
+/* void bf.Parse.NotChanOp(char *server, char *channel, char *text) */
+> Alias bf.Parse.NotChanOp
+{
+   bf.Show.NotChanOp $bf.CleanShow($*);
+}
+
+> Alias bf.Parse.WindowKill #bf.Echo.d WinKill: $*;
+
+
+/* show funtions */
+/* ------------- */
+> Alias bf.SetupShowFunctions
+{
+   $K${K}ForEach bv.ms atmp.fe
+      {
+      > ^Alias bf.Show.$atmp.fe $(bv.ms.$atmp.fe);
+      }
+}
+bf.SetupShowFunctions
+
+
+/* mass functions bassed on ircII-EPIC scirpts */
+/* ------------------------------------------- */
+> Alias bf.Mass $K${K}Fe ($5-) atmp.1 atmp.2 atmp.3 atmp.4
+{
+   bf.Mode $0 ${[$atmp.4]?[$1$2$3$4]:[${[$atmp.3]?[$1$2$3]:[${[$atmp.2]?[$1$2]:[$1]}]}]} $atmp.1 $atmp.2 $atmp.3 $atmp.4;
+}
+#> Alias bf.Mass1 $K${K}Fe ($2-) atmp.x {$0 $1 $atmp.x}
+
+
+/* list functions */
+/* -------------- */
+
+/* int bf.IsUserLevel(char *userlevel, char *userhost, char *channel = "*")
+ * does user@host have this userlevel on this channel? returns an index
+ * into the friend list on match else 0, userlevel ? = just check if friend.
+   the or operator | works userlevel */
+> Alias bf.IsUserLevel
+{
+   if (bv.t.FriendFunctions)
+      {
+      @ atmp.userlevel.num = rmatch($1 $bv.ul.Friend.Hosts);
+      if (atmp.userlevel.num)
+	 {
+	 @ atmp.userlevel.chan = [$2] ? rmatch($2 $split($bg.Colon $bf.word($atmp.userlevel.num $bv.ul.Friend.Chans))) : [-1];
+	 if (atmp.userlevel.chan)
+	    {
+	    @ atmp.userlevel.level = bf.word($atmp.userlevel.chan $split($bg.Colon $bf.word($atmp.userlevel.num $bv.ul.Friend.Levels)));
+	    @ atmp.userlevel.match = 1;
+	    @ atmp.userlevel.match2 = 0;
+	    $K${K}Fec ($0) atmp.fec.x
+	       {
+	       if ([$atmp.fec.x]==[|])
+		  {
+		  if (atmp.userlevel.match2<1)
+		     {
+		     @ atmp.userlevel.match2 = atmp.userlevel.match;
+		     }
+		  @ atmp.userlevel.match = -1;
+		  }
+	       #else
+		  {
+		  if (index($atmp.fec.x $atmp.userlevel.level)<0 && [$atmp.fec.x]!=[?])
+		     {
+		     @ atmp.userlevel.match = 0;
+		     }
+		  #else
+		     {
+		     if (atmp.userlevel.match<0)
+			{
+			@ atmp.userlevel.match = 1;
+			}
+		     }
+		  }
+	       }
+	    if (atmp.userlevel.match2 || atmp.userlevel.match>0)
+	       {
+	       @ function_return = atmp.userlevel.num;
+	       }
+	    #else
+	       {
+	       @ function_return = 0;
+	       }
+	    }
+         #else
+	    {
+	    @ function_return = 0;
+	    }
+	 }
+      #else
+	 {
+	 @ function_return = 0;
+	 }
+      bf.Purge atmp.userlevel;
+      }
+   #else
+      {
+      @ function_return = 0;
+      }
+}
+
+/* int bf.IsShitLevel(char *shitlevel, char *userhost, char *channel = "*")
+ * does user@host have this shitlevel on this channel?  returns an index
+ * into the shit list on match else 0, shitlevel ? = just check if shitted
+   also the or | operator works in shitlevel */
+> Alias bf.IsShitLevel
+{
+   if (bv.t.ShitFunctions)
+      {
+      @ atmp.shitlevel.num = rmatch($1 $bv.ul.Shit.Hosts);
+      if (atmp.shitlevel.num)
+	 {
+	 @ atmp.shitlevel.chan = [$2] ? rmatch($2 $split($bg.Colon $bf.word($atmp.shitlevel.num $bv.ul.Shit.Chans))) : [1];
+	 if (atmp.shitlevel.chan)
+	    {
+	    @ atmp.shitlevel.level = bf.word($atmp.shitlevel.chan $split($bg.Colon $bf.word($atmp.shitlevel.num $bv.ul.Shit.Levels)));
+	    @ atmp.shitlevel.match = 1;
+	    @ atmp.shitlevel.match2 = 0;
+	    $K${K}Fec ($0) atmp.fec.x
+	       {
+	       if ([$atmp.fec.x]==[|])
+		  {
+		  if (atmp.shitlevel.match2<1)
+		     {
+		     @ atmp.shitlevel.match2 = atmp.shitlevel.match;
+		     }
+		  @ atmp.shitlevel.match = -1;
+		  }
+	       #else
+		  {
+		  if (index($atmp.fec.x $atmp.shitlevel.level)<0 && [$atmp.fec.x]!=[?])
+		     {
+		     @ atmp.shitlevel.match = 0;
+		     }
+		  #else
+		     {
+		     if (atmp.shitlevel.match<0)
+			{
+			@ atmp.shitlevel.match = 1;
+			}
+		     }
+		  }
+	       }
+	    if (atmp.shitlevel.match2 || atmp.shitlevel.match>0)
+	       {
+	       @ function_return = atmp.shitlevel.num;
+	       }
+	    #else
+	       {
+	       @ function_return = 0;
+	       }
+	    }
+         #else
+	    {
+	    @ function_return = 0;
+	    }
+	 }
+      #else
+	 {
+	 @ function_return = 0;
+	 }
+      bf.Purge atmp.shitlevel;
+      }
+   #else
+      {
+      @ function_return = 0;
+      }
+}
+
+/* char *bf.ShitReason(int index)
+   returns shitreason at index */
+> Alias bf.ShitReason
+{
+   @ function_return = [$(bv.ul.Shit.Reason.$0)];
+}
+
+
+/* misc functions */
+/* -------------- */
+
+> Alias bf.GetTime
+{
+   if ([$(bv.t.ShowTime.$0)])
+      {
+      @ function_return = [$bv.cs.Time1$bf.Time()$bv.cs.Time2];
+      }
+   #else
+      {
+      if ([$1]!=[_])
+	 {
+	 @ function_return = [$1 ];
+	 }
+      #else
+	 {
+	 @ function_return = [];
+	 }
+      }
+}
+
+> Alias bf.Index @ function_return = index($*) + 1;
+
+/* returns a nick!user@host pattern for nick, user and host based on type.
+ * pattern types:
+ * N: nick, U: username, H: host, D: domain, S: site, C: country, I: no identd
+ * char *bf.UserPattern(char *nick, char *user, char *host,
+			char *type = "UDI")*/
+> Alias bf.UserPattern
+{
+   @ atmp.pat.type = index(NUHDSCI $toupper($3))>=0 ? toupper($3) : [UDI];
+   @ atmp.pat.nick = index(N $atmp.pat.type)>=0 ? [$0] : [*];
+   @ atmp.pat.user = index(U $atmp.pat.type)>=0 ? bf.MakeUserPat($1 ${index(I $atmp.pat.type)>=0}) : [*];
+   if (index(HDSC $atmp.pat.type)>=0)
+      {
+      if (index(H $atmp.pat.type)>=0)
+	 {
+	 @ atmp.pat.host = [$2];
+	 }
+      #else
+	 {
+	 if (index(D $atmp.pat.type)>=0)
+	    {
+	    @ atmp.pat.host = bf.MakeDomainPat($2);
+	    }
+	 #else
+	    {
+	    if (index(S $atmp.pat.type)>=0)
+	       {
+	       @ atmp.pat.host = bf.MakeSitePat($2);
+	       }
+	    #else
+	       {
+	       if (index(C $atmp.pat.type)>=0)
+		  {
+		  @ atmp.pat.host = bf.MakeCountryPat($2);
+		  }
+	       }
+	    }
+	 }
+      }
+   #else
+      {
+      @ atmp.pat.host = [*];
+      }
+
+   @ function_return = [$atmp.pat.nick!$atmp.pat.user@$atmp.pat.host];
+   bf.Purge atmp.pat;
+}
+
+/* takes a username and returns a suitable pattern for it
+   char *bf.MakeUserPat(char *username, int noidentd) */
+> Alias bf.MakeUserPat
+{
+   @ atmp.userpat = sar(g//?/$sar(g//?/$sar(g//?/$sar(g//?/$sar(g//?/$sar(g//?/$0))))));
+   if (@atmp.userpat>=10)
+      {
+      @ function_return = [*$right(9 $atmp.userpat)];
+      }
+   #else
+      {
+      if ([$1]==[1])
+	 {
+	 @ function_return = [*${[$[1]atmp.userpat]==[~]?[$mid(1 -1 $atmp.userpat)]:[$atmp.userpat]}];
+	 }
+      #else
+	 {
+	 @ function_return = atmp.userpat;
+	 }
+      }
+   > ^Assign -atmp.userpat;
+}
+
+/* takes a hostname and returns a domain pattern
+   char *bf.MakeDomainPat(char *hostname) */
+> Alias bf.MakeDomainPat
+{
+   if (isdigit($right(1 $*)))
+      {
+      @ function_return = [$mid(0 $rindex(. $*) $*).*];
+      }
+   #else
+      {
+      @ function_return = [*${index(. $*)==rindex(. $*)?[$*]:[$mid($index(. $*) -1 $*)]}];
+      }
+}
+
+/* takes a hostname and returns a site pattern
+   char *bf.MakeSitePat(char *hostname) */
+> Alias bf.MakeSitePat
+{
+   if (isdigit($right(1 $*)))
+      {
+      @ function_return = [$mid(0 $rindex(. $mid(0 $rindex(. $*) $*)) $*).*];
+      }
+   #else
+      {
+      if (index(. $*)==rindex(. $*))
+	 {
+	 @ function_return = [*$*];
+	 }
+      #else
+	 {
+	 @ atmp.host = [$*];
+	 @ function_return = [*$right(${@atmp.host - rindex(. $mid(0 $rindex(. $*) $*))} $*)];
+	 > ^Assign -atmp.host;
+	 }
+      }
+}
+
+/* takes a hostname and returns a country pattern
+   char *bf.MakeCountryPat(char *hostname) */
+> Alias bf.MakeCountryPat
+{
+   if (isdigit($right(1 $*)))
+      {
+      @ function_return = [$mid(0 $index(. $*) $*).*];
+      }
+   #else
+      {
+      @ function_return = [*$mid($rindex(. $*) -1 $*)];
+      }
+}
+
+/* does this username have illegal chars in it?
+   int bf.IsBadUserName(char *username) */
+/* [working on this] */
+> Alias bf.IsBadUserName
+{
+   @ function_return = index($bg.BadUserNameChars $0)>=0;
+}
+
+/* int bf.IsArWord(char *text)
+   does text have an ar word in it? */
+> Alias bf.IsArWord
+{
+   @ atmp.ar.match = 0;
+   $K${K}Fe ($bv.u.AutoReplyPats) atmp.ar.x
+      {
+      if (match($atmp.ar.x $*))
+	 {
+	 @ atmp.ar.match = 1;
+	 }
+      }
+   @ function_return = atmp.ar.match;
+   bf.Purge atmp.ar;
+}
+
+/* the beginnings of a names window... */
+> Alias bf.Update.Names.Window
+{
+   bf.Show.NamesWindow ${bv.t.NamesWindow?[*Names*]:[main]} $C $numonchannel($C) ${[$chops($C)]?[@$sar(g/ / @/$chops($C)) ]:[]}$nochops($C);
+}
+
+/* based on LiCe $ref() function acts like $word() only 1 is the first word
+ * instead of 0 being the first word
+ * ---------------------------------
+   char *bf.Word(int index, char *words) */
+> Alias bf.Word @ function_return = [$(${[$0]})];
+
+> Alias bf.ShowSet @ function_return = [$0] ? [On] : [Off];
+
+/* fix epic's $center() bug */
+> Alias bf.Center
+{
+   @ atmp.center.str = [$1-];
+
+   if (@atmp.center.str >= [$0])
+      {
+      @ function_return = [$1-];
+      }
+   #else
+      {
+      @ function_return = center($*);
+      }
+   > ^Assign -atmp.center.str;
+}
+
+> Alias bf.SaveTypeToName
+{
+   @ atmp.sv.type.names = [];
+   if (match(.f $*))  {: $push(atmp.sv.type.names Files)}
+   if (match(.fs $*)) {: $push(atmp.sv.type.names FormatStrings)}
+   if (match(.k $*))  {: $push(atmp.sv.type.names Keys)}
+   if (match(.l $*))  {: $push(atmp.sv.type.names Sensors)}
+   if (match(.m $*))  {: $push(atmp.sv.type.names Messages)}
+   if (match(.ms $*)) {: $push(atmp.sv.type.names MsgStrings)}
+   if (match(.cs $*)) {: $push(atmp.sv.type.names ColorStrings)}
+   if (match(.s $*))  {: $push(atmp.sv.type.names Sounds)}
+   if (match(.t $*))  {: $push(atmp.sv.type.names Toggles)}
+   if (match(.u $*))  {: $push(atmp.sv.type.names UserSettings)}
+   if (match(.ul $*)) {: $push(atmp.sv.type.names Lists)}
+   if (match(.x $*))  {: $push(atmp.sv.type.names XternalVariables)}
+   if (match(.cl $*)) {: $push(atmp.sv.type.names CompletionLists)}
+   if (match("% % % % % % % % % % % % %" "$*")) {@ atmp.sv.type.names = [ALL]}
+   @ function_return = atmp.sv.type.names;
+}
+
+/* toggle a variable on and off */
+/* void bf.Toggle(void *variable, char *toggleto = "") */
+> Alias bf.Toggle
+{
+   if ([$1])
+      {
+      if ([$1]==[On] || [$1]==[1])
+	 {
+	 @ $0 = 1;
+	 }
+      #else
+	 {
+	 @ $0 = 0;
+	 }
+      }
+   #else
+      {
+      if ([$($0)]==[1])
+	 {
+	 @ $0 = 0;
+	 }
+      #else
+	 {
+	 @ $0 = 1;
+	 }
+      }
+}
+
+/* convert escapes to a viewable form */
+> Alias bf.CleanAnsi @ function_return =  [${bv.t.DisplayAnsi?[$*]:[$sar(g//\[/$*)]}];
+
+/* convert bold, inverse, etc.. control chars and escape to viewable form */
+> Alias bf.CleanShow
+{
+   @ function_return = sar(g/	/I/$sar(g//O/$sar(g//\[/$sar(g//_/$sar(g//B/$sar(g//V/$*))))));
+}
+
+/* strip bold, inverse, etc... */
+> Alias bf.Clean @ function_return = strip( $*);
+
+/* returns current time in ??:?? format */
+#, Alias bf.Time @ function_return = [$mid(11 5 $stime($time()))];
+> Alias bf.Time @ function_return = mid(0 ${@Z==6?4:5} $Z);
+
+> Alias bf.Date @ function_return = [$mid(4 12 $stime($time())) \'$mid(22 2 $stime($time()))];
+
+/* adds # if needed to channel name */
+> Alias bf.MakeChan
+{
+   if ([$0]!=[])
+      {
+      @ function_return = ischannel($0) ? [$0] : [#$0];
+      }
+   #else
+      {
+      @ function_return = [];
+      }
+}
+
+/* remove duplicate words from list */
+> Alias bf.NoDups
+{
+   @ atmp.dup.str = [$*];
+   @ atmp.dup.str2 = [];
+   while (atmp.dup.str)
+      {
+      @ atmp.dup.word = shift(atmp.dup.str);
+      @ atmp.dup.str = filter($atmp.dup.word $atmp.dup.str);
+      : $push(atmp.dup.str2 $atmp.dup.word);
+      }
+   @ function_return = atmp.dup.str2;
+   bf.Purge atmp.dup;
+}
+
+> Alias bf.GetDate @ function_return = mid(4 12 $stime($0));
+
+/* takes a number of seconds and returns amount of time in readable but
+   short form (based on $tdiff() from ircII source) */
+> Alias bf.Tdiff
+{
+   @ atmp.tdiff.time = [$0];
+   @ atmp.tdiff.seconds = atmp.tdiff.time % 60;
+   @ atmp.tdiff.time = (atmp.tdiff.time - atmp.tdiff.seconds) / 60;
+   @ atmp.tdiff.minutes = atmp.tdiff.time % 60;
+   @ atmp.tdiff.time = (atmp.tdiff.time - atmp.tdiff.minutes) / 60;
+   @ atmp.tdiff.hours = atmp.tdiff.time % 24;
+   @ atmp.tdiff.days = (atmp.tdiff.time - atmp.tdiff.hours) / 24;
+   @ function_return = [${atmp.tdiff.days?[$atmp.tdiff.days day${atmp.tdiff.days==1?[]:[s]} ]:[]}${atmp.tdiff.hours?[$atmp.tdiff.hours$bg.colon]:[]}${atmp.tdiff.minutes?[${atmp.tdiff.minutes<10?[0]:[]}$atmp.tdiff.minutes]:[00]}:${atmp.tdiff.seconds?[${atmp.tdiff.seconds<10?[0]:[]}$atmp.tdiff.seconds]:[00]}];
+   bf.Purge atmp.tdiff;
+}
+
+/* char *bf.ColorFilter(const char *text) */
+/* hmm.. */
+> Alias bf.ToColor @ function_return = sar(g/%W/\[1\;37m/$sar(g/%C/\[1\;36m/$sar(g/%P/\[1\;35m/$sar(g/%B/\[1\;34m/$sar(g/%Y/\[1\;33m/$sar(g/%G/\[1\;32m/$sar(g/%R/\[1\;31m/$sar(g/%d/\[m/$sar(g/%w/\[0\;37m/$sar(g/%c/\[0\;36m/$sar(g/%p/\[0\;35m/$sar(g/%b/\[0\;34m/$sar(g/%y/\[0\;33m/$sar(g/%g/\[0\;32m/$sar(g/%r/\[0\;31m/$sar(g/%k/\[1\;30m/$sar(g/%%/%/$*)))))))))))))))));
+> Alias bf.FromColor @ function_return = sar(g/\[37m/%w/$sar(g/\[36m/%c/$sar(g/\[35m/%p/$sar(g/\[34m/%b/$sar(g/\[33m/%y/$sar(g/\[32m/%g/$sar(g/\[31m/%r/$sar(g/\[30m/%k/$sar(g/\[1\;37m/%W/$sar(g/\[1\;36m/%C/$sar(g/\[1\;35m/%P/$sar(g/\[1\;34m/%B/$sar(g/\[1\;33m/%Y/$sar(g/\[1\;32m/%G/$sar(g/\[1\;31m/%R/$sar(g/\[m/%d/$sar(g/\[0\;37m/%w/$sar(g/\[0\;36m/%c/$sar(g/\[0\;35m/%p/$sar(g/\[0\;34m/%b/$sar(g/\[0\;33m/%y/$sar(g/\[0\;32m/%g/$sar(g/\[0\;31m/%r/$sar(g/\[1\;30m/%k/$*))))))))))))))))))))))));
+
+/*         Black, Red, Green, Yellow, Blue, Purple, Cyan, White
+ *             0,   1,     2,     3,     4,      5,    6,    7,
+ * Normal:         %r,    %g,    %y,    %b,     %p,   %c,   %w,
+ * Bright:    %k,  %R,    %G,    %Y,    %B,     %P,   %C,   %W,
+ *                            (Brown)
+ * Default: %d
+ */
+
+/* Based on LiCe $fix.un() which is based on $stu by TG */
+/* char *bf.StripUndernet(const char *text) */
+> Alias bf.StripUndernet
+{
+   if ([$right(13 $0)]==[.undernet.org])
+      {
+      @ function_return = left($rindex(. $left($rindex(. $0) $0)) $left($rindex(. $0) $0));
+      }
+   #else
+      {
+      @ function_return = [$0]
+      }
+}
+
+/* [todo: ...] */
+> Alias bf.SetStatusBar
+{
+   > ^Set status_format $bv.u.StatusBar;
+   > ^Set status_user1 $bg.MesgNum;
+#   > ^Set status_user4 ${[$mychannels()]?[Channels$bg.Colon $mychannels()]:[]};
+   > ^Set status_user4 Channels: $bg.StatusChannels;
+}
+
+/* [todo: like auto reply /msg only /whois] */
+> Alias bf.AutoWhoIs
+{
+
+}
+
+/* push a word onto a list, moving items to the start if already there
+ * returns list with item pushed on
+   char *bf.Push(variable list, char *item) */
+/* > Alias bf.Push
+ * {
+ *  @ atmp.push.spot = rmatch($*);
+ *  if (atmp.push.spot > 0)
+ *     {
+ *     @ function_return = [$(0-${atmp.push.spot - 1})${[$(${atmp.push.spot + 1}-)]?[ ]:[]}$(${atmp.push.spot + 1}-)];
+ *     }
+ *  @ atmp.push.spot = [];
+ * }
+ */
+
+/* push a word onto a list, moving items to the start if already there
+   void bf.Push(variable list, char *item) */
+> Alias bf.Push
+{
+   if ([$1]!=[])
+      {
+      @ atmp.push.spot = rmatch($1 $($0));
+      if (atmp.push.spot > 0)
+	 {
+	 @ $0 = [$1 ] ## remw($1 $($0));
+	 }
+      #else
+	 {
+	 @ $0 = [$1 $($0)];
+	 }
+      @ atmp.push.spot = [];
+      }
+}
+
+/* Random nick generators based on LiCe */
+> Alias bf.RandNick
+{
+   @ atmp.rn.nick = mid($rand(10) 1 $bv.u.RandNickChars);
+   @ atmp.rn.len = 1;
+   @ atmp.rn.max = [$0] ? [$0] : 9;
+   while (atmp.rn.len < atmp.rn.max)
+      {
+      @ atmp.rn.nick = [$atmp.rn.nick$mid($rand(21) 1 $bv.u.RandNickChars)];
+      @ atmp.rn.len++;
+      }
+   @ function_return = atmp.rn.nick;
+   bf.Purge atmp.rn;
+}
+
+> Alias bf.RandINick
+{
+   @ atmp.ri.cnt = 0;
+   @ atmp.ri.rnd = rand(9);
+   @ atmp.ri.nick = [];
+   @ atmp.ri.max = [$0] ? [$0] : 9;
+   while (atmp.ri.cnt < atmp.ri.max)
+      {
+      if (atmp.ri.rnd >= 4)
+	 {
+	 @ atmp.ri.nick = [$(atmp.ri.nick)I];
+	 }
+      #else
+	 {
+	 @ atmp.ri.nick = [$(atmp.ri.nick)l];
+	 }
+      @ atmp.ri.rnd = rand(9);
+      @ atmp.ri.cnt++;
+      }
+   @ function_return = atmp.ri.nick;
+   bf.Purge atmp.ri;
+}
+
+/* based on lformat from ircII scripts */
+> Alias bf.LFormat
+{
+   @ atmp.lf.word = [$1-];
+   if (@atmp.lf.word < [${[$[1]0]==[-]?[$mid(1 -1 $0)]:[$0]}])
+      {
+      @ function_return = [$([$0]atmp.lf.word)];
+      }
+   #else
+      {
+      @ function_return = atmp.lf.word;
+      }
+   > ^Assign -atmp.lf.word;
+}
+
+/*
+ * Completion by TaCo - uses some ideas by Daemon
+ * ----------------------------------------------
+ * this is "Normal" completion, based on bash file name completion,
+ * it will complete up util there is a difference and show possible
+ * completions.  char is a char to type after the completion (_ = no char)
+ * dummy does nothing, it's here only for compatibility with CompletionCycle
+   void bf.CompletionNormal(char char, int dummy, char *list) */
+> Alias bf.CompletionNormal
+{
+   if ([$2])
+      {
+      $K${K}Eval > ^Assign atmp.cn.prompt $Input_Prompt;
+      @ atmp.cn.curpos = curpos() - @atmp.cn.prompt;
+      @ atmp.cn.text = mid(0 $atmp.cn.curpos $L);
+      if ([$atmp.cn.text]==[$L]) {@ atmp.cn.space = 1}{@ atmp.cn.space = 0}
+      @ atmp.cn.word = [$right(1 $atmp.cn.text)]==[ ] ? [] : rightw(1 $atmp.cn.text);
+
+      if ([$atmp.cn.word])
+	 {
+	 @ atmp.cn.nummatches = 0;
+	 @ atmp.cn.matches = [];
+	 @ atmp.cn.firstmatch = [];
+	 $K${K}Fe ($2-) zz
+	    {
+	    if (match($atmp.cn.word $([$@atmp.cn.word]zz)))
+	       {
+	       @ atmp.cn.nummatches++;
+	       if (!atmp.cn.firstmatch)
+		  {
+		  @ atmp.cn.firstmatch = zz;
+		  @ atmp.cn.matches = zz;
+		  }
+	       #else
+		  {
+		  @ atmp.cn.matches = [$atmp.cn.matches $zz];
+		  }
+	       }
+	    }
+	 }
+      #else
+	 {
+	 @ atmp.cn.matches = [$2-];
+	 @ atmp.cn.nummatches = #atmp.cn.matches;
+	 @ atmp.cn.firstmatch = word(0 $atmp.cn.matches);
+	 }
+
+      if (atmp.cn.nummatches>1)
+	 {
+#	 @ atmp.cn.spot = 0;
+/* sdfslkdjf */
+	 @ atmp.cn.spot = @atmp.cn.word;
+	 @ atmp.cn.diff = 0;
+	 while (!atmp.cn.diff)
+	    {
+	    @ atmp.cn.spot++;
+	    $K${K}Fe ($atmp.cn.matches) zz
+	       {
+	       if (atmp.cn.spot==@atmp.cn.firstmatch && @atmp.cn.firstmatch==@zz)
+		  {
+		  @ atmp.cn.spot++;
+		  @ atmp.cn.diff = 1;
+		  }
+	       #else
+		  {
+		  if ([$([$atmp.cn.spot]atmp.cn.firstmatch)]!=[$([$atmp.cn.spot]zz)])
+		     {
+		     @ atmp.cn.diff = 1;
+		     }
+		  }
+	       }
+	    }
+	 @ atmp.cn.spot--;
+	 bf.Show.Matches $atmp.cn.matches;
+	 if (atmp.cn.spot>0)
+	    {
+	    > ParseKey delete_to_previous_space;
+	    > Xtype -lit $([$atmp.cn.spot]atmp.cn.firstmatch);
+	    }
+	 }
+      #else
+	 {
+	 if (atmp.cn.nummatches==1)
+	    {
+	    > ParseKey delete_to_previous_space;
+	    > Xtype -lit $word(0 $atmp.cn.matches)${[$0]!=[_]?[$0]:[]}${atmp.cn.space?[ ]:[]};
+	    }
+	 }
+      }
+}
+
+/*
+ * Completion by TaCo - uses some ideas by Daemon
+ * ----------------------------------------------
+ * This is "Cycle" completion, it will cycle through all the possibities
+ * char is a char to type after the completion (_ = no char)
+ * this is version 2 of cycle completion - much faster now (but it can't
+ * go backwards anymore..)
+   void bf.CompletionCycle(char char, char *list) */
+> Alias bf.CompletionCycle
+{
+   if ([$1])
+      {
+      $K${K}Eval > ^Assign atmp.cn.prompt $Input_Prompt;
+      @ atmp.cn.curpos = curpos() - @atmp.cn.prompt;
+      @ atmp.cn.text = mid(0 $atmp.cn.curpos $L);
+      if ([$atmp.cn.text]==[$L]) {@ atmp.cn.space = 1}{@ atmp.cn.space = 0}
+      @ atmp.cn.word = [$right(1 $atmp.cn.text)]==[ ] ? [] : rightw(1 $atmp.cn.text);
+
+      if ([$atmp.cn.word])
+	 {
+	 if ([$atmp.cn.word]==[$bg.cn.lastword] && [$1-]==[$atmp.cn.lastpats])
+	    {
+	    @ atmp.cn.spotnew = match($atmp.cn.matchword\* $restw($atmp.cn.spot $1-));
+	    > ParseKey delete_to_previous_space;
+	    if (atmp.cn.spotnew)
+	       {
+	       @ atmp.cn.spot += atmp.cn.spotnew;
+	       @ bg.cn.lastword = [$bf.Word($atmp.cn.spot $1-)${[$0]!=[_]?[$0]:[]}];
+	       > Xtype -lit $bg.cn.lastword;
+	       }
+	    #else
+	       {
+	       @ atmp.cn.spot = match($atmp.cn.matchword\* $1-);
+	       if (atmp.cn.spot)
+		  {
+		  @ bg.cn.lastword = [$bf.Word($atmp.cn.spot $1-)${[$0]!=[_]?[$0]:[]}];
+		  > ParseKey delete_to_previous_space;
+		  > Xtype -lit $bg.cn.lastword;
+		  }
+	       #else
+		  {
+		  @ bg.cn.lastword = [];
+		  }
+	       }
+	    }
+	 #else
+	    {
+	    @ atmp.cn.matchword = atmp.cn.word;
+	    @ atmp.cn.spot = match($atmp.cn.word\* $1-);
+	    @ atmp.cn.lastpats = [$1-];
+	    if (atmp.cn.spot)
+	       {
+	       @ bg.cn.lastword = [$bf.Word($atmp.cn.spot $1-)${[$0]!=[_]?[$0]:[]}];
+	       > ParseKey delete_to_previous_space;
+	       > Xtype -lit $bg.cn.lastword;
+	       }
+	    #else
+	       {
+	       @ bg.cn.lastword = [];
+	       }
+	    }
+
+	 }
+      #else
+	 {
+	 @ bg.cn.lastword = [$word(0 $1-)${[$0]!=[_]?[$0]:[]}];
+	 @ atmp.cn.spot = 1;
+	 @ atmp.cn.lastpats = [$1-];
+	 @ atmp.cn.matchword = [];
+	 > ParseKey delete_to_previous_space;
+	 > Xtype -lit $bg.cn.lastword;
+	 }
+      }
+   #else
+      {
+      @ atmp.cn.lastpats = [];
+      }
+}
+
+
+/* searches for url and if found adds it to the url list */
+> Alias bf.GetUrl
+{
+   @ atmp.url.ptr = match("%://%.%" $*);
+   if (atmp.url.ptr)
+      {
+/*       @ bv.cl.Url = bf.Push($strip(, $word(${atmp.url.ptr - 1} $*)) $bv.cl.Url); */
+      bf.Push bv.cl.Url $strip(, $word(${atmp.url.ptr - 1} $*));
+      }
+   > ^Assign -atmp.url.ptr;
+}
+
+/* this decodes LiCe LCM encoded messages, the key used doesnt matter (heh) */
+> Alias bf.DecodeLCM
+{
+   @ function_return = decode($tr(/~\\\(\'@\}#\;\!%^-.\*\"\$+:<0,|&`=_/ABCDEFGHIJKLMNOPQRSTUVWXYZ/$*));
+}
+
+/* NetSplit tester by TaCo, uses ideas from Netsplit VII by Daemon and LiCe
+ * ------------------------------------------------------------------------
+ * int bf.IsSplit(char *signoffmesg) */
+> Alias bf.IsSplit
+{
+   if ([$2])
+      {
+      @ function_return = 0;
+      }
+   #else
+      {
+      if (!match("%.% %.%" "$0 $1"))
+	 {
+	 @ function_return = 0;
+	 }
+      #else
+	 {
+	 if ([$0]==[$1] || rmatch(.$0. *..*) || rmatch(.$1. *..*) || \
+             !rmatch($right(3 $0) $bg.Hosts) || \
+             !rmatch($right(3 $1) $bg.Hosts))
+	    {
+	    @ function_return = 0;
+	    }
+	 #else
+	    {
+	    @ function_return = 1;
+	    }
+	 }
+      }
+}
+
+/* sound player */
+> On ^Exec_Error "SoundPlay *" bf.ErrorBeep $1-;
+> Alias bf.Play
+{
+   if (bv.t.Sounds && [$0]!=[])
+      {
+      > Exec -Name SoundPlay $bv.f.Play $bv.f.SoundDir/$*;
+      }
+   #else
+      {
+      bf.Beep;
+      }
+}
+
+/* blah.. */
+> Alias bf.Beep
+{
+   if (bv.t.Beeps)
+      {
+      @ atmp.beep = beep;
+      > ^Set beep on;
+      > Xecho -Window main -Level crap ;
+      > ^Set beep $atmp.beep;
+      }
+}
+
+/* blah.. */
+> Alias bf.ErrorBeep
+{
+   if (bv.t.Beeps)
+      {
+      @ atmp.beep = beep;
+      > ^Set beep on;
+      bf.Echo.b Could not play sound [$*] beeping instead;
+      > ^Set beep $atmp.beep;
+      }
+}
+
+> Alias bf.JoinStack
+{
+   if ([$bg.JoinStack])
+      {
+      @ atmp.js.chan = word(0 $bg.JoinStack);
+      @ bg.JoinStack = restw(1 $bg.JoinStack);
+#      if (ischannel($atmp.js.chan))
+#	 {
+	 bc.Join Normal $atmp.js.chan;
+#	 }
+#      #else
+#	 {
+#	 bf.JoinStack;
+#	 }
+      > ^Assign -atmp.js.chan;
+      }
+}
+
+/* void bf.NoticeChat(char *nick, char *userhost, char *msg)
+ * sends msg through dcc chat if you have a chat connection going or
+ * through notice if you don't.  the method for detecting if there is a chat
+ * connection needs work..
+ */
+> Alias bf.NoticeChat
+{
+   if ([$(bg.DccChatUH.$encode($0))]==[$1])
+      {
+      > ^Msg =$0 $2-;
+      }
+   #else
+      {
+      bf.Notice $0 $2-;
+      }
+}
+
+> Alias bf.Size
+{
+#   @ function_return = [$0]<1024 ? [$0] : [$0]<1048576 ? [${[$0]/1024}k${[$0]%1024}b] : [${[$0]/1048576}m${([$0]%1048576)/1024}k];
+   @ function_return = [$0]<1024 ? [$0] : [$0]<1048576 ? [${[$0]/1024}k] : [${[$0]/1048576}m${([$0]%1048576)/1024}k];
+#   @ function_return = [$0]<1024 ? [$0\b] : [$0]<1048576 ? [${[$0]/1024}.${([$0]%1024)<100?[0]:[]}${([$0]%1024)<10?[0]:[]}${[$0]%1024}k] : [${[$0]/1048576}.${(([$0]%1048576)/1024)<100?[0]:[]}${(([$0]%1048576)/1024)<10?[0]:[]}${([$0]%1048576)/1024}m];
+}
+

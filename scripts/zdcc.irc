@@ -1,0 +1,250 @@
+/*  _____ _________________________
+ * /__  / ___  __ \_  ____/_  ____/
+ *   / /  __  / / /  /    _  /
+ *  / /__ _  /_/ // /___  / /___
+ * /____/ /_____/ \____/  \____/
+ *
+ * XDCC script by TaCo for BuRRiTo (uses ideas from XDCC in LiCe)
+ * This is ZDCC v0.2
+ */
+
+@ bx.ZDccVersion = [ZDCC v0.2];
+@ bg.VersionReply = [$bg.VersionReply + $bx.ZDccVersion];
+> Eval > ^Set Client_Information [running: $bg.VersionReply];
+@ bx.start.load = time();
+> Eval bf.Echo.b Loading the XDCC script $bx.ZDccVersion\...;
+
+> Alias bf.Echo.ZDcc bf.Echo.y [ZDcc] $*;
+
+#@ bx.ZDccCommands = [AutoClose AutoGet Close Dir DlDir DOffer Get GList Limit List Load Log Notice Offer OverWrite Pass PList PSend Rate Req Save Sec Send Status UlDir];
+@ bx.ZDccCommands = [DOffer List Offer PList Send];
+@ bx.ZDccMCommands = [List Send];
+
+/*
+ * Pack info format (bx.ZDcc.Pack.Info):
+ * Gets Size Files Desc
+ */
+
+> Alias bc.ZDcc
+{
+   if ([$0])
+      {
+      if (rmatch($0 $bx.ZDccCommands))
+	 {
+	 bxc.ZDcc.$*;
+	 }
+      #else
+	 {
+	 bf.Echo.ZDcc No such ZDcc command: [$0].;
+	 }
+      }
+   #else
+      {
+      bc.Help ZDcc;
+      }
+}
+
+> Alias bxc.ZDcc.Offer
+{
+   if ([$1]!=[])
+      {
+      @ atmp.pk.files = [];
+      @ atmp.pk.info = [];
+      @ atmp.pk.numfiles = 0;
+      @ atmp.pk.size = 0;
+      @ atmp.pk.desc = [$1-];
+      > ^On ^Exec_Error "ZDccOffer *" bf.Echo.ZDcc ZDccOffer: $$2 file not found - skipping.;
+      > ^On ^Exec "ZDccOffer *"
+	 {
+	 if ([$[1]1]!=[-])
+	    {
+	    bf.Echo.ZDcc ZDccOffer: $9\: not a regular file - skipping.;
+	    }
+	 #else
+	    {
+	    @ atmp.pk.files = [$atmp.pk.files $9];
+	    @ atmp.pk.info = [$atmp.pk.info $5];
+	    @ atmp.pk.numfiles++;
+	    @ atmp.pk.size += [$5];
+	    }
+	 }
+      > ^On ^Exec_Exit "ZDccOffer *"
+	 {
+	 > ^On ^Exec_Error -"ZDccOffer *";
+	 > ^On ^Exec -"ZDccOffer *";
+	 > ^On ^Exec_Exit -"ZDccOffer *";
+	 if ([$atmp.pk.files]!=[])
+	    {
+	    @ bx.ZDcc.PackNum++;
+	    @ bx.ZDcc.Pack.Files[$bx.ZDcc.PackNum] = atmp.pk.files;
+	    @ bx.ZDcc.Pack.FileInfo[$bx.ZDcc.PackNum] = atmp.pk.info;
+	    @ bx.ZDcc.Pack.Info[$bx.ZDcc.PackNum] = [0 $atmp.pk.size $atmp.pk.numfiles $atmp.pk.desc];
+	    bf.Echo.ZDcc $atmp.pk.numfiles file\(s\) added to pack #$bx.ZDcc.PackNum\.;
+	    }
+	 #else
+	    {
+	    bf.Echo.ZDcc ZDccOffer: No files for pack - offer canceled.;
+	    }
+	 }
+      > Exec -Name ZDccOffer ls -ld $split(, $0);
+      }
+   #else
+      {
+      bf.Echo.h Usage: /ZDcc Offer <filespec[,filespec[,...]]> <Description>;
+      bf.Echo.h filespec may include wildcards.;
+      }
+}
+
+> Alias bxc.ZDcc.DOffer
+{
+   if ([$0]!=[])
+      {
+      if ([$0]==[-])
+	 {
+	 bf.Purge bx.ZDcc.Pack;
+	 @ bx.ZDcc.PackNum = 0;
+	 bf.Echo.ZDcc DOffer: removed all packs from pack list.;
+	 }
+      #else
+	 {
+	 if ([$0] > 0 && [$0] <= bx.ZDcc.PackNum)
+	    {
+	    if ([$0] == bx.ZDcc.PackNum)
+	       {
+	       @ bx.ZDcc.Pack.Files[$0] = [];
+	       @ bx.ZDcc.Pack.FileInfo[$0] = [];
+	       @ bx.ZDcc.Pack.Info[$0] = [];
+	       }
+	    #else
+	       {
+	       $K${K}For (@ i = 1, i < bx.ZDcc.PackNum, @ i++)
+		  {
+		  @ bx.ZDcc.Pack.Files[$i] = [$bx.ZDcc.Pack.Files[${i+1}]];
+		  @ bx.ZDcc.Pack.FileInfo[$i] = [$bx.ZDcc.Pack.FileInfo[${i+1}]];
+		  @ bx.ZDcc.Pack.Info[$i] = [$bx.ZDcc.Pack.Info[${i+1}]];
+		  }
+	       }
+	    @ bx.ZDcc.PackNum--;
+	    bf.Echo.ZDcc DOffer: removed pack #$0 from pack list.;
+	    }
+	 #else
+	    {
+	    bf.Echo.h DOffer: invalid pack number.;
+	    }
+	 }
+      }
+   #else
+      {
+      bf.Echo.h Usage: /ZDcc DOffer <pack#|->;
+      bf.Echo.h removes pack# from pack list or if - is used removes all packs.;
+      }
+}
+
+> Alias bxc.ZDcc.List bxf.ZDcc.List $encode(bf.Echo.ZDcc) $*;
+> Alias bxc.ZDcc.MList bxf.ZDcc.List $encode(bf.NoticeChat $0 $1) $2;
+> Alias bxc.ZDcc.PList bxf.ZDcc.List ${ [$0] ? ischannel($0) ? encode(> Msg $0) : encode(bf.Notice $0) : C != 0 ? encode(> Msg $C) : [] };
+
+> Alias bxf.ZDcc.List
+{
+   if ([$0]!=[])
+      {
+      @ atmp.ls.cmd = decode($0);
+      if (bx.ZDcc.PackNum > 0)
+	 {
+	 if ([$1]!=[])
+	    {
+	    @ atmp.ls.num = [$[1]1]==[#] ? mid(1 -1 $1) : [$1];
+	    if (atmp.ls.num > 0 && atmp.ls.num <= bx.ZDcc.PackNum)
+	       {
+	       $atmp.ls.cmd Pack #atmp.ls.num\: $Word(2 $bx.ZDcc.Pack.Info[$atmp.ls.num]) Files, $Word(0 $bx.ZDcc.Pack.Info[$atmp.ls.num]) Gets, $bf.Size($Word(1 $bx.ZDcc.Pack.Info[$atmp.ls.num])) - "$restw(3 $bx.ZDcc.Pack.Info[$atmp.ls.num])";
+	       $K${K}For (@ i = 0, i < Word(2 $bx.ZDcc.Pack.Info[$atmp.ls.num]), @ i++)
+		  {
+		  $atmp.ls.cmd File ${i+1}\: $word($i $bx.ZDcc.Pack.Files[$atmp.ls.num]) - $word($i $bx.ZDcc.Pack.FileInfo[$atmp.ls.num]) bytes;
+		  }
+	       }
+	    #else
+	       {
+	       $atmp.ls.cmd List: invalid pack number.;
+	       }
+	    }
+	 #else
+	    {
+	    $atmp.ls.cmd [*] Packs offered: "/Msg $N ZDcc Send #" to send pack #;
+	    $K${K}For (@ i = 1, i <= bx.ZDcc.PackNum, @ i++)
+	       {
+	       $atmp.ls.cmd $bxf.ShowPack($i);
+	       }
+	    }
+	 }
+      #else
+	 {
+	 if ([$atmp.ls.cmd]==[bf.Echo.ZDcc])
+	    {
+	    bf.Echo.ZDcc No packs offered.;
+	    }
+	 }
+      }
+}
+
+> Alias bxf.ShowPack
+{
+   @ function_return = [#$0\ $Word(2 $bx.ZDcc.Pack.Info[$0])f $Word(0 $bx.ZDcc.Pack.Info[$0])g <$bf.LFormat(-6 $bf.Size($Word(1 $bx.ZDcc.Pack.Info[$0])))> $restw(3 $bx.ZDcc.Pack.Info[$0])];
+}
+
+> Alias bxc.ZDcc.Send bxf.ZDcc.Send bf.Echo.ZDcc $0 none $1;
+> Alias bxc.ZDcc.MSend bxf.ZDcc.Send bf.NoticeChat,$0 $0-2;
+
+/* void bxf.ZDcc.Send(char *command, char *nick, char *userhost, int packnum)*/
+> Alias bxf.ZDcc.Send
+{
+   if ([$0]!=[])
+      {
+      @ atmp.sd.cmd = [$split(, $0) $2];
+      if ([$3]!=[])
+	 {
+	 @ atmp.sd.pk = [$[1]3]==[#] ? mid(1 -1 $3) : [$3];
+	 if ([$atmp.sd.pk]>0 && [$atmp.sd.pk]<=bx.ZDcc.PackNum)
+	    {
+	    bf.Echo.ZDcc Sending $1 pack #$atmp.sd.pk;
+	    bf.NoticeChat $1 $2 Sending you pack $bxf.ShowPack($atmp.sd.pk);
+	    $K${K}For (@ i = 0, i < Word(2 $bx.ZDcc.Pack.Info[$atmp.sd.pk]), @ i++)
+	       {
+	       > ^DCC Send $1 $Word($i $bx.ZDcc.Pack.Files[$atmp.sd.pk]);
+	       }
+	    @ bx.ZDcc.Pack.Info[$atmp.sd.pk] = [${Word(0 $bx.ZDcc.Pack.Info[$atmp.sd.pk])+1} $restw(1 $bx.ZDcc.Pack.Info[$atmp.sd.pk])];
+	    }
+	 #else
+	    {
+	    $atmp.sd.cmd Send: invalid pack number.;
+	    }
+	 }
+      #else
+	 {
+	 if ([$atmp.sd.cmd]==[bf.Echo.ZDcc])
+	    {
+	    bc.Help ZDcc.Send;
+	    }
+	 #else
+	    {
+	    $atmp.sd.cmd Usage: "/Msg $N ZDcc Send #" where # is the pack number you want.;
+	    }
+	 }
+      }
+}
+
+/* void bxf.Parse.ZDccRequest(char *nick, char *userhost, char *command)
+ */
+> Alias bxf.Parse.ZDccRequest
+{
+   if (rmatch($2 $bx.ZDccMCommands))
+      {
+      bxc.ZDcc.M$2 $0-1 $3-;
+      }
+   #else
+      {
+      bf.Notice $0 [ZDcc] Invalid ZDcc Command.  Try "/Msg $N ZDcc Help";
+      }
+}
+
+> Eval bf.Echo.ZDcc Loading Complete, Time: $tdiff(${time() - bx.Start.Load});
+

@@ -1,0 +1,23 @@
+
+* fix bugs
+
+* color/format configure system
+
+* file offering (ZDCC)
+
+* logging
+
+* code optimizing
+
+* multi server support
+
+* window handling
+
+* flood protection
+
+* desynch messages
+
+* merge friend/shit list functions to reduce wasted code
+
+* make /edcs more friendly
+
